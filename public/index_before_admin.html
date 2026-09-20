@@ -1,0 +1,578 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACPay</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial;
+ background:#f5f3ff;
+ color:#241b35
+}
+.app{
+ max-width:480px;
+ margin:auto;
+ min-height:100vh;
+ background:#fff;
+ padding-bottom:75px
+}
+header{
+ background:linear-gradient(135deg,#6d28d9,#9333ea);
+ color:#fff;
+ padding:24px 20px;
+ border-radius:0 0 24px 24px
+}
+.small{opacity:.8;font-size:13px}
+.balance{font-size:32px;font-weight:700;margin-top:18px}
+main{padding:18px}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px
+}
+.card{
+ border:1px solid #eee;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 4px 15px #00000008;
+ margin-bottom:14px
+}
+button{
+ width:100%;
+ border:0;
+ border-radius:12px;
+ padding:13px;
+ background:#7c3aed;
+ color:#fff;
+ font-weight:700;
+ margin-top:8px
+}
+button.secondary{
+ background:#eee;
+ color:#333
+}
+button.green{
+ background:#16a34a
+}
+button.red{
+ background:#dc2626
+}
+input{
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ border:1px solid #ddd;
+ border-radius:10px
+}
+.hidden{display:none}
+nav{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ max-width:480px;
+ width:100%;
+ display:flex;
+ background:#fff;
+ border-top:1px solid #eee
+}
+nav button{
+ background:#fff;
+ color:#555;
+ border-radius:0;
+ margin:0
+}
+.msg{
+ padding:10px;
+ border-radius:10px;
+ background:#f3e8ff;
+ margin:10px 0
+}
+.upi-row{
+ display:flex;
+ gap:8px;
+ align-items:center
+}
+.upi-row input{
+ margin:7px 0;
+ flex:1;
+ background:#f8f8f8
+}
+.copy-btn{
+ width:auto;
+ min-width:80px;
+ margin:7px 0
+}
+.amount{
+ font-size:30px;
+ font-weight:700;
+ margin:12px 0
+}
+.status{
+ display:inline-block;
+ padding:6px 10px;
+ border-radius:20px;
+ background:#fef3c7;
+ color:#92400e;
+ font-size:13px;
+ font-weight:700
+}
+#preview{
+ width:100%;
+ max-height:350px;
+ object-fit:contain;
+ border-radius:12px;
+ margin-top:10px;
+ display:none;
+ border:1px solid #ddd
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>ACPay</h1>
+<div class="small" id="user">Welcome</div>
+</header>
+
+<main>
+
+<!-- LOGIN -->
+<section id="login">
+<h2>Login</h2>
+<input id="lu" placeholder="Username">
+<input id="lp" type="password" placeholder="Password">
+<button onclick="login()">Login</button>
+<p>New user?
+<a href="#" onclick="show('register');return false">Register</a>
+</p>
+</section>
+
+<!-- REGISTER -->
+<section id="register" class="hidden">
+<h2>Register</h2>
+<input id="ru" placeholder="Username">
+<input id="rp" type="password" placeholder="Password">
+<button onclick="register()">Create account</button>
+<p>Already registered?
+<a href="#" onclick="show('login');return false">Login</a>
+</p>
+</section>
+
+<!-- DASHBOARD -->
+<section id="home" class="hidden">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+<div class="small">Available Balance</div>
+<div class="balance">₹<span id="balance">0</span></div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<b>Payment</b>
+<p>Make payment</p>
+<button onclick="openPayment()">Open</button>
+</div>
+
+<div class="card">
+<b>USDT</b>
+<p>Deposit</p>
+<button onclick="alert('Coming soon')">Open</button>
+</div>
+
+<div class="card">
+<b>Statistics</b>
+<p>View activity</p>
+<button onclick="alert('Coming soon')">Open</button>
+</div>
+
+<div class="card">
+<b>Withdrawal</b>
+<p>UPI / Bank</p>
+<button onclick="alert('Coming soon')">Open</button>
+</div>
+
+</div>
+
+<div class="msg">
+Your wallet balance is updated automatically from deposits and withdrawals.
+</div>
+
+<button onclick="logout()">Logout</button>
+
+</section>
+
+<!-- PAYMENT -->
+<section id="payment" class="hidden">
+
+<h2>Payment</h2>
+
+<div id="paymentBox">
+<div class="card">
+
+<h3>Payment Order</h3>
+
+<div class="small">UPI ID</div>
+
+<div class="upi-row">
+<input id="upiId" readonly value="">
+<button class="copy-btn" onclick="copyUPI()">Copy</button>
+</div>
+
+<div class="small">Amount</div>
+<div class="amount">₹<span id="payAmount">0</span></div>
+
+<div>
+<span id="payStatus" class="status">Pending</span>
+</div>
+
+<button class="green" id="paidBtn" onclick="showProof()">
+Paid
+</button>
+
+</div>
+</div>
+
+<div id="proofBox" class="card hidden">
+
+<h3>Payment Proof</h3>
+
+<p class="small">
+Payment karne ke baad payment screenshot upload karein.
+</p>
+
+<input
+ id="screenshot"
+ type="file"
+ accept="image/png,image/jpeg,image/webp"
+ onchange="previewImage(event)"
+>
+
+<img id="preview">
+
+<button onclick="submitProof()">
+Submit Payment
+</button>
+
+<button class="secondary" onclick="cancelProof()">
+Cancel
+</button>
+
+</div>
+
+<div id="noPayment" class="msg hidden">
+No payment order available right now.
+</div>
+
+</section>
+
+</main>
+
+<nav id="nav" class="hidden">
+<button onclick="show('home')">Home</button>
+<button onclick="openPayment()">Payment</button>
+<button onclick="alert('Coming soon')">USDT</button>
+<button onclick="alert('Coming soon')">My</button>
+</nav>
+
+</div>
+
+<script>
+
+const API='/api';
+
+let currentPayment=null;
+
+function show(id){
+
+ const sections=['login','register','home','payment'];
+
+ sections.forEach(x=>{
+  const el=document.getElementById(x);
+  if(el)el.classList.add('hidden');
+ });
+
+ const target=document.getElementById(id);
+
+ if(target)target.classList.remove('hidden');
+
+ document.getElementById('nav')
+  .classList.toggle('hidden',id==='login'||id==='register');
+
+}
+
+async function req(p,o={}){
+
+ const r=await fetch(API+p,{
+  headers:{
+   ...(o.headers||{})
+  },
+  ...o
+ });
+
+ let d=await r.json().catch(()=>({}));
+
+ if(!r.ok)
+  throw Error(d.error||'Request failed');
+
+ return d;
+}
+
+async function register(){
+
+ try{
+
+  await req('/register',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({
+    username:document.getElementById('ru').value,
+    password:document.getElementById('rp').value
+   })
+  });
+
+  alert('Registered. Please login.');
+  show('login');
+
+ }catch(e){
+  alert(e.message);
+ }
+
+}
+
+async function login(){
+
+ try{
+
+  let d=await req('/login',{
+   method:'POST',
+   headers:{'Content-Type':'application/json'},
+   body:JSON.stringify({
+    username:document.getElementById('lu').value,
+    password:document.getElementById('lp').value
+   })
+  });
+
+  localStorage.token=d.token;
+
+  await loadMe();
+
+ }catch(e){
+  alert(e.message);
+ }
+
+}
+
+async function loadMe(){
+
+ try{
+
+  let d=await req('/me',{
+   headers:{
+    Authorization:'Bearer '+localStorage.token
+   }
+  });
+
+  document.getElementById('user').textContent=
+   'Welcome, '+d.user.username;
+
+  document.getElementById('balance').textContent=
+   d.user.balance;
+
+  show('home');
+
+ }catch(e){
+
+  localStorage.removeItem('token');
+  show('login');
+
+ }
+
+}
+
+async function openPayment(){
+
+ show('payment');
+
+ document.getElementById('proofBox').classList.add('hidden');
+
+ try{
+
+  let d=await req('/payments',{
+   headers:{
+    Authorization:'Bearer '+localStorage.token
+   }
+  });
+
+  if(!d.payments||d.payments.length===0){
+
+   document.getElementById('paymentBox')
+    .classList.add('hidden');
+
+   document.getElementById('noPayment')
+    .classList.remove('hidden');
+
+   return;
+  }
+
+  currentPayment=d.payments[0];
+
+  document.getElementById('paymentBox')
+   .classList.remove('hidden');
+
+  document.getElementById('noPayment')
+   .classList.add('hidden');
+
+  document.getElementById('upiId').value=
+   currentPayment.upi_id||'';
+
+  document.getElementById('payAmount').textContent=
+   currentPayment.amount||0;
+
+  document.getElementById('payStatus').textContent=
+   currentPayment.status||'Pending';
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+
+}
+
+async function copyUPI(){
+
+ const value=document.getElementById('upiId').value;
+
+ if(!value){
+  alert('UPI ID not available');
+  return;
+ }
+
+ try{
+
+  await navigator.clipboard.writeText(value);
+  alert('UPI ID copied');
+
+ }catch(e){
+
+  const input=document.getElementById('upiId');
+  input.select();
+  document.execCommand('copy');
+  alert('UPI ID copied');
+
+ }
+
+}
+
+function showProof(){
+
+ if(!currentPayment){
+  alert('Payment order not available');
+  return;
+ }
+
+ document.getElementById('proofBox')
+  .classList.remove('hidden');
+
+ document.getElementById('screenshot').value='';
+
+ document.getElementById('preview').style.display='none';
+
+ window.scrollTo({
+  top:document.body.scrollHeight,
+  behavior:'smooth'
+ });
+
+}
+
+function cancelProof(){
+
+ document.getElementById('proofBox')
+  .classList.add('hidden');
+
+}
+
+function previewImage(event){
+
+ const file=event.target.files[0];
+
+ if(!file)return;
+
+ const preview=document.getElementById('preview');
+
+ preview.src=URL.createObjectURL(file);
+ preview.style.display='block';
+
+}
+
+async function submitProof(){
+
+ if(!currentPayment){
+  alert('Payment order not available');
+  return;
+ }
+
+ const file=
+  document.getElementById('screenshot').files[0];
+
+ if(!file){
+  alert('Please select payment screenshot');
+  return;
+ }
+
+ const form=new FormData();
+
+ form.append('screenshot',file);
+
+ try{
+
+  const d=await req(
+   '/payments/'+currentPayment.id+'/proof',
+   {
+    method:'POST',
+    headers:{
+     Authorization:'Bearer '+localStorage.token
+    },
+    body:form
+   }
+  );
+
+  alert(d.message||'Payment proof submitted');
+
+  document.getElementById('proofBox')
+   .classList.add('hidden');
+
+  await openPayment();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+
+}
+
+function logout(){
+
+ localStorage.removeItem('token');
+ show('login');
+
+}
+
+loadMe();
+
+</script>
+
+</body>
+</html>

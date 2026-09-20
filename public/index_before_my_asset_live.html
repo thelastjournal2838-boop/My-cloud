@@ -1,0 +1,5249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACPay</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f5f3ff;
+ color:#241b35
+}
+.app{
+ max-width:480px;
+ margin:auto;
+ min-height:100vh;
+ background:#fff;
+ padding-bottom:75px
+}
+header{
+ display:none
+}
+header h1{margin:0 0 12px}
+.small{opacity:.75;font-size:13px}
+.balance{font-size:32px;font-weight:700;margin-top:18px}
+main{padding:18px}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px
+}
+.card{
+ border:1px solid #eee;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 4px 15px #00000008;
+ margin-bottom:14px
+}
+button{
+ width:100%;
+ border:0;
+ border-radius:12px;
+ padding:13px;
+ background:#7c3aed;
+ color:#fff;
+ font-weight:700;
+ margin-top:8px;
+ cursor:pointer
+}
+button.green{background:#16a34a}
+button.red{background:#dc2626}
+button.secondary{
+ background:#eee;
+ color:#333
+}
+button.dark{background:#241b35}
+input{
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ border:1px solid #ddd;
+ border-radius:10px;
+ font-size:15px
+}
+.hidden{display:none}
+nav{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ max-width:480px;
+ width:100%;
+ height:82px;
+ display:flex;
+ background:#fff;
+ border-top:1px solid #e5e7eb;
+ z-index:100;
+ box-shadow:0 -4px 18px #00000010;
+ padding:5px 2px 3px
+}
+
+nav button{
+ flex:1;
+ width:20%;
+ height:74px;
+ background:#fff;
+ color:#555;
+ border-radius:0;
+ margin:0;
+ padding:5px 2px 2px;
+ font-size:14px;
+ font-weight:700;
+ display:flex;
+ flex-direction:column;
+ align-items:center;
+ justify-content:center;
+ gap:3px
+}
+
+nav button span{
+ display:flex;
+ align-items:center;
+ justify-content:center;
+ width:34px;
+ height:34px;
+ font-size:27px;
+ line-height:1;
+ font-weight:700
+}
+
+nav button:first-child{
+ color:#1769d1
+}
+
+nav button:first-child span{
+ font-size:31px
+}
+
+nav button:nth-child(3) span{
+ width:48px;
+ height:48px;
+ margin-top:-17px;
+ border-radius:50%;
+ background:#16a878;
+ color:#fff;
+ font-size:27px;
+ box-shadow:0 4px 12px #00000020;
+ border:4px solid #fff
+}
+.msg{
+ padding:10px;
+ border-radius:10px;
+ background:#f3e8ff;
+ margin:10px 0
+}
+.upi-row{
+ display:flex;
+ gap:8px;
+ align-items:center
+}
+.upi-row input{
+ flex:1;
+ background:#f8f8f8;
+ margin:7px 0
+}
+.copy-btn{
+ width:auto;
+ min-width:80px;
+ margin:7px 0
+}
+.amount{
+ font-size:30px;
+ font-weight:700;
+ margin:12px 0
+}
+.status{
+ display:inline-block;
+ padding:6px 10px;
+ border-radius:20px;
+ background:#fef3c7;
+ color:#92400e;
+ font-size:13px;
+ font-weight:700
+}
+.status.approved{
+ background:#dcfce7;
+ color:#166534
+}
+.status.rejected{
+ background:#fee2e2;
+ color:#991b1b
+}
+#preview{
+ width:100%;
+ max-height:350px;
+ object-fit:contain;
+ border-radius:12px;
+ margin-top:10px;
+ display:none;
+ border:1px solid #ddd
+}
+.admin-item{
+ border:1px solid #eee;
+ border-radius:14px;
+ padding:14px;
+ margin-bottom:12px
+}
+.admin-item img{
+ width:100%;
+ max-height:300px;
+ object-fit:contain;
+ border-radius:10px;
+ margin-top:10px
+}
+hr{
+ border:0;
+ border-top:1px solid #eee;
+ margin:16px 0
+}
+
+
+<style>
+ .withdraw-switch{
+  position:relative !important;
+  width:68px !important;
+  min-width:68px !important;
+  height:34px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:20px !important;
+  background:#dc2626 !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.20) !important;
+  transition:.25s !important;
+}
+
+.withdraw-switch.on{
+  background:#16a34a !important;
+}
+
+.withdraw-switch .switch-knob{
+  position:absolute !important;
+  top:3px !important;
+  left:3px !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.30) !important;
+  transition:.25s !important;
+  z-index:2 !important;
+}
+
+.withdraw-switch.on .switch-knob{
+  transform:translateX(34px) !important;
+}
+
+.withdraw-switch .switch-label{
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  padding-right:9px !important;
+  box-sizing:border-box !important;
+  color:#fff !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+}
+
+.withdraw-switch.on .switch-label{
+  justify-content:flex-start !important;
+  padding-left:9px !important;
+  padding-right:0 !important;
+}
+
+
+/* ACPay MY PAGE */
+.ac-my-page{
+  padding:0 0 30px;
+  background:#f5f8fc;
+}
+
+.ac-my-title{
+  text-align:center;
+  font-size:34px;
+  line-height:1.15;
+  font-weight:800;
+  color:#087dcc;
+  margin:6px 0 25px;
+}
+
+.ac-asset-card{
+  background:#fff;
+  border-radius:30px;
+  padding:20px 24px 22px;
+  margin:0 -2px 20px;
+  border:1px solid #e9eef4;
+  box-shadow:0 5px 22px #0000000d;
+}
+
+.ac-asset-grid{
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  gap:12px;
+}
+
+.ac-asset-item{
+  min-width:0;
+  height:110px;
+  background:#eaf6ff;
+  border-radius:26px;
+  display:flex;
+  align-items:center;
+  padding:13px;
+  gap:11px;
+  overflow:hidden;
+}
+
+.ac-asset-text{
+  min-width:0;
+  flex:1;
+}
+
+.ac-asset-icon{
+  width:52px;
+  height:52px;
+  min-width:52px;
+  border-radius:50%;
+  background:#fff;
+  color:#087dcc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:26px;
+  font-weight:700;
+  box-shadow:0 3px 12px #0000000b;
+}
+
+.ac-asset-label{
+  color:#687585;
+  font-size:17px;
+  line-height:1.2;
+  margin-bottom:6px;
+  white-space:nowrap;
+}
+
+.ac-asset-value{
+  color:#18212b;
+  font-size:22px;
+  line-height:1;
+  font-weight:800;
+  white-space:nowrap;
+}
+
+.ac-my-options{
+  background:#fff;
+  border-radius:30px;
+  padding:24px 16px 22px;
+  border:1px solid #e9eef4;
+  box-shadow:0 5px 22px #0000000d;
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  column-gap:4px;
+  row-gap:20px;
+}
+
+.ac-my-option{
+  width:100%;
+  min-width:0;
+  height:115px;
+  background:#fff;
+  color:#18212b;
+  border:0;
+  border-radius:16px;
+  margin:0;
+  padding:0;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  font-size:17px;
+  font-weight:800;
+}
+
+.ac-my-option:hover{
+  background:#fff;
+}
+
+.ac-option-icon{
+  width:68px;
+  height:68px;
+  min-width:68px;
+  border-radius:50%;
+  background:#eaf6ff;
+  color:#087dcc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:31px;
+  line-height:1;
+  font-weight:700;
+}
+
+.ac-my-option strong{
+  font-size:17px;
+  line-height:1.2;
+  white-space:nowrap;
+}
+
+.ac-my-info{
+  text-align:right;
+  margin:14px 8px 16px;
+  color:#087dcc;
+  font-size:15px;
+  font-weight:700;
+}
+
+.ac-my-logout{
+  width:86%;
+  height:52px;
+  display:block;
+  margin:0 auto;
+  border-radius:32px;
+  background:#087dcc;
+  color:#fff;
+  font-size:18px;
+  font-weight:800;
+  box-shadow:0 5px 15px #087dcc30;
+}
+
+@media(max-width:390px){
+
+  .ac-my-title{
+    font-size:36px;
+    margin-bottom:28px;
+  }
+
+  .ac-asset-card{
+    padding:22px 18px 24px;
+  }
+
+  .ac-asset-item{
+    height:124px;
+    padding:14px;
+    gap:10px;
+  }
+
+  .ac-asset-icon{
+    width:54px;
+    height:54px;
+    min-width:54px;
+    font-size:27px;
+  }
+
+  .ac-asset-label{
+    font-size:17px;
+  }
+
+  .ac-asset-value{
+    font-size:23px;
+  }
+
+  .ac-my-options{
+    padding:28px 10px;
+    row-gap:24px;
+  }
+
+  .ac-option-icon{
+    width:72px;
+    height:72px;
+    min-width:72px;
+    font-size:32px;
+  }
+
+  .ac-my-option{
+    height:125px;
+  }
+
+  .ac-my-option strong{
+    font-size:17px;
+  }
+}
+
+body.ac-loading .app{visibility:hidden}
+body.ac-loading{background:#fff}
+
+/* TEAM SHARE UI */
+
+.ac-team-share{
+  background:#fff;
+  border:1px solid #e8e8e8;
+  border-radius:28px;
+  padding:28px 20px;
+  margin-top:24px;
+  box-shadow:0 3px 12px rgba(0,0,0,.05);
+}
+
+.ac-team-share h2{
+  margin:0 0 24px;
+  font-size:28px;
+  color:#17212b;
+}
+
+.ac-team-share-grid{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:14px;
+}
+
+.ac-team-share-grid button{
+  border:0;
+  background:#eff9f5;
+  border-radius:22px;
+  min-height:125px;
+  padding:14px 8px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:12px;
+  cursor:pointer;
+  color:#17212b;
+}
+
+.ac-team-share-grid button:active{
+  transform:scale(.97);
+}
+
+.share-icon{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  font-weight:700;
+  background:#fff;
+}
+
+.ac-team-share-grid strong{
+  font-size:16px;
+  white-space:nowrap;
+}
+
+.ac-team-referral-code{
+  margin-top:22px;
+  padding:16px;
+  background:#f7f7f7;
+  border-radius:16px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:15px;
+}
+
+.ac-team-referral-code span{
+  color:#7a8188;
+  font-size:14px;
+}
+
+.ac-team-referral-code strong{
+  font-size:18px;
+  letter-spacing:1px;
+}
+
+@media(max-width:420px){
+  .ac-team-share-grid{
+    gap:10px;
+  }
+
+  .ac-team-share-grid button{
+    min-height:118px;
+  }
+
+  .ac-team-share-grid strong{
+    font-size:14px;
+  }
+}
+
+
+</style>
+
+</style>
+
+<style id="final-withdraw-style">
+
+/* UPI success message */
+#withdrawUpiSaved.withdraw-success{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  margin-top:12px !important;
+  padding:10px 12px !important;
+  border-radius:12px !important;
+  background:#e9f9ef !important;
+  border:1px solid #b9e8ca !important;
+  color:#16834b !important;
+  font-size:14px !important;
+  font-weight:600 !important;
+}
+
+#withdrawUpiSaved.withdraw-success.hidden{
+  display:none !important;
+}
+
+#withdrawUpiSaved .check{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 20px !important;
+  width:20px !important;
+  height:20px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  background:#16a34a !important;
+  color:#fff !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+}
+
+/* Genuine ON / OFF switch */
+#withdrawToggle.withdraw-switch{
+  position:relative !important;
+  display:block !important;
+  width:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+  height:32px !important;
+  min-height:32px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:18px !important;
+  background:#dc2626 !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.22) !important;
+  overflow:hidden !important;
+  cursor:pointer !important;
+}
+
+#withdrawToggle.withdraw-switch.on{
+  background:#16a34a !important;
+}
+
+#withdrawToggle .switch-knob{
+  position:absolute !important;
+  display:block !important;
+  top:3px !important;
+  left:3px !important;
+  width:26px !important;
+  height:26px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.30) !important;
+  transform:none !important;
+  transition:transform .22s ease !important;
+  z-index:3 !important;
+}
+
+#withdrawToggle.on .switch-knob{
+  transform:translateX(32px) !important;
+}
+
+#withdrawToggle .switch-label{
+  position:absolute !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  top:0 !important;
+  left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  padding:0 7px 0 0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  color:#fff !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  z-index:2 !important;
+  pointer-events:none !important;
+}
+
+#withdrawToggle.on .switch-label{
+  justify-content:flex-start !important;
+  padding:0 0 0 7px !important;
+}
+
+</style>
+
+</head>
+
+<body class="ac-loading">
+
+<div class="app">
+
+<header>
+<h1>ACPay</h1>
+<div class="small" id="user">Welcome</div>
+<div class="small" id="userIdDisplay"></div>
+</header>
+
+<main>
+
+<!-- LOGIN -->
+<section id="login">
+<h2>Login</h2>
+
+<input id="lu" placeholder="Username">
+<input id="lp" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p>
+New user?
+<a href="#" onclick="show('register');return false">Register</a>
+</p>
+
+<hr>
+
+<button class="dark" onclick="show('adminLogin')">
+Admin Panel
+</button>
+
+</section>
+
+
+<!-- REGISTER -->
+<section id="register" class="hidden">
+
+<h2>Register</h2>
+
+<input id="ru" placeholder="Username">
+<input id="rp" type="password" placeholder="Password">
+
+<button onclick="register()">Create account</button>
+
+<p>
+Already registered?
+<a href="#" onclick="show('login');return false">Login</a>
+</p>
+
+</section>
+
+
+<!-- ADMIN LOGIN -->
+<section id="adminLogin" class="hidden">
+
+<h2>Admin Login</h2>
+
+<input id="au" placeholder="Admin Username">
+<input id="ap" type="password" placeholder="Admin Password">
+
+<button onclick="adminLogin()">Login as Admin</button>
+
+<button class="secondary"
+onclick="show('login')">
+Back
+</button>
+
+</section>
+
+
+<!-- DASHBOARD -->
+<section id="home" class="hidden">
+
+<style>
+.ac-dashboard{
+  padding:10px 0 90px;
+  background:#f6f9ff;
+}
+.ac-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.ac-brand{
+  font-size:24px;
+  font-weight:800;
+  color:#1769e0;
+}
+.ac-tag{
+  font-size:11px;
+  color:#718096;
+  margin-top:2px;
+}
+.ac-icons{
+  font-size:20px;
+  letter-spacing:8px;
+}
+.ac-user{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin:12px 0;
+}
+.ac-avatar{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  background:#e6f1ff;
+  color:#1769e0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:800;
+  font-size:20px;
+}
+.ac-user-name{
+  font-weight:750;
+  font-size:16px;
+}
+.ac-user-id{
+  font-size:11px;
+  color:#7b8794;
+}
+.ac-verified{
+  margin-left:auto;
+  background:#e8f2ff;
+  color:#1769e0;
+  padding:6px 10px;
+  border-radius:20px;
+  font-size:11px;
+  font-weight:700;
+}
+.ac-balance{
+  border-radius:20px;
+  padding:20px;
+  color:white;
+  background:linear-gradient(135deg,#075ed7,#25a9f5);
+  box-shadow:0 10px 25px rgba(20,100,220,.20);
+}
+.ac-balance-label{
+  font-size:13px;
+  opacity:.9;
+}
+.ac-balance-value{
+  font-size:29px;
+  font-weight:800;
+  margin:5px 0 8px;
+}
+.ac-balance-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:12px;
+}
+.ac-detail{
+  background:white;
+  color:#1769e0;
+  border:0;
+  border-radius:12px;
+  padding:8px 13px;
+  font-weight:700;
+}
+.ac-profit{
+  margin-top:12px;
+  border-radius:17px;
+  padding:14px;
+  background:#eaf4ff;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  border:1px solid #d8eaff;
+  pointer-events:none;
+  user-select:none;
+}
+.ac-profit-icon{
+  font-size:25px;
+}
+.ac-profit-title{
+  font-size:11px;
+  color:#718096;
+}
+.ac-profit-value{
+  font-size:25px;
+  font-weight:850;
+  color:#155fc5;
+  line-height:1.1;
+}
+.ac-profit-right{
+  margin-left:auto;
+  border-left:1px solid #cfe0f5;
+  padding-left:12px;
+  font-size:11px;
+  color:#4b6b8f;
+}
+.ac-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:12px;
+}
+.ac-action{
+  border:0;
+  border-radius:17px;
+  padding:15px;
+  color:white;
+  text-align:left;
+  font-weight:700;
+  min-height:80px;
+}
+.ac-action.deposit{
+  background:linear-gradient(135deg,#1689ed,#35b9f5);
+}
+.ac-action.withdraw{
+  background:linear-gradient(135deg,#5968e8,#8165ef);
+}
+.ac-action small{
+  display:block;
+  margin-top:7px;
+  opacity:.9;
+  font-weight:500;
+}
+.ac-shortcuts{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
+  margin-top:12px;
+}
+.ac-shortcut{
+  border:0;
+  border-radius:16px;
+  background:white;
+  padding:14px 5px;
+  box-shadow:0 4px 15px rgba(30,70,120,.06);
+  color:#26364a;
+  font-weight:700;
+}
+.ac-shortcut .ico{
+  display:block;
+  font-size:23px;
+  margin-bottom:6px;
+}
+.ac-reward{
+  margin-top:12px;
+  border-radius:18px;
+  background:white;
+  padding:16px;
+  box-shadow:0 4px 15px rgba(30,70,120,.06);
+}
+.ac-reward-title{
+  font-size:12px;
+  font-weight:800;
+  color:#617085;
+}
+.ac-reward-status{
+  margin-top:8px;
+  font-size:22px;
+  font-weight:800;
+}
+.ac-reward-text{
+  margin-top:5px;
+  font-size:11px;
+  color:#7a8796;
+}
+
+/* FINAL MOBILE SIZE FIX */
+@media (max-width:480px){
+
+  .ac-my-page{
+    padding:4px 0 18px !important;
+  }
+
+  .ac-my-title{
+    font-size:30px !important;
+    margin:4px 0 20px !important;
+  }
+
+  .ac-asset-card{
+    padding:16px 18px 18px !important;
+    margin-bottom:18px !important;
+    border-radius:24px !important;
+  }
+
+  .ac-asset-grid{
+    gap:10px !important;
+  }
+
+  .ac-asset-item{
+    height:92px !important;
+    padding:10px !important;
+    gap:8px !important;
+    border-radius:20px !important;
+  }
+
+  .ac-asset-icon{
+    width:44px !important;
+    height:44px !important;
+    min-width:44px !important;
+    font-size:22px !important;
+  }
+
+  .ac-asset-label{
+    font-size:15px !important;
+    margin-bottom:5px !important;
+  }
+
+  .ac-asset-value{
+    font-size:20px !important;
+  }
+
+  .ac-my-options{
+    padding:20px 8px 18px !important;
+    row-gap:12px !important;
+    border-radius:24px !important;
+  }
+
+  .ac-my-option{
+    height:100px !important;
+    gap:6px !important;
+  }
+
+  .ac-option-icon{
+    width:58px !important;
+    height:58px !important;
+    min-width:58px !important;
+    font-size:27px !important;
+  }
+
+  .ac-my-option strong{
+    font-size:15px !important;
+  }
+
+  .ac-my-info{
+    margin:10px 6px 12px !important;
+    font-size:13px !important;
+  }
+
+  .ac-my-logout{
+    height:48px !important;
+    font-size:17px !important;
+  }
+}
+
+
+/* FLOATING LIVE CHAT */
+.ac-live-chat{
+  position:fixed;
+  right:16px;
+  top:65%;
+  bottom:auto;
+  z-index:9999;
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:#0aa86b;
+  color:#fff;
+  text-decoration:none;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  box-shadow:0 5px 18px #00000030;
+  border:3px solid #fff;
+  touch-action:none;
+  cursor:grab;
+  user-select:none;
+}
+
+.ac-live-chat:active{
+  cursor:grabbing;
+}
+
+.ac-chat-icon{
+  font-size:30px;
+  font-weight:700;
+  line-height:1;
+  pointer-events:none;
+}
+
+.ac-chat-text{
+  display:none;
+}
+
+@media(max-width:480px){
+  .ac-live-chat{
+    right:14px;
+    width:56px;
+    height:56px;
+  }
+}
+
+
+/* TASK REWARDS */
+.ac-task-page{
+  padding:0 0 30px;
+  background:#f5f8fc;
+  min-height:calc(100vh - 20px);
+}
+
+.ac-task-header{
+  position:relative;
+  text-align:center;
+  padding:4px 10px 24px;
+}
+
+.ac-task-back{
+  position:absolute;
+  left:0;
+  top:0;
+  width:48px;
+  height:48px;
+  margin:0;
+  padding:0;
+  background:transparent;
+  color:#18212b;
+  font-size:45px;
+  font-weight:400;
+  line-height:40px;
+}
+
+.ac-task-title{
+  color:#087dcc;
+  font-size:34px;
+  font-weight:800;
+}
+
+.ac-task-subtitle{
+  color:#687585;
+  font-size:17px;
+  margin-top:8px;
+}
+
+.ac-task-tabs{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  background:#eaf6f2;
+  border-radius:30px;
+  padding:5px;
+  margin-bottom:28px;
+}
+
+.ac-task-tabs button{
+  margin:0;
+  padding:13px 8px;
+  background:transparent;
+  color:#687585;
+  border-radius:26px;
+  font-size:16px;
+  white-space:nowrap;
+}
+
+.ac-task-tabs button.active{
+  background:#fff;
+  color:#18212b;
+  box-shadow:0 3px 10px #00000015;
+}
+
+.ac-task-card{
+  background:#fff;
+  border-radius:28px;
+  padding:26px 20px;
+  border:1px solid #e8edf3;
+  box-shadow:0 5px 18px #0000000c;
+  margin-bottom:20px;
+}
+
+.ac-task-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  font-size:16px;
+  color:#687585;
+}
+
+.ac-task-row strong{
+  color:#087fce;
+  font-size:20px;
+}
+
+.ac-task-progress{
+  height:14px;
+  background:#e8f5ef;
+  border-radius:10px;
+  margin:16px 0 26px;
+  overflow:hidden;
+}
+
+.ac-task-progress div{
+  width:0;
+  height:100%;
+  background:#087dcc;
+}
+
+.ac-task-card h2{
+  margin:0 0 12px;
+  color:#18212b;
+  font-size:27px;
+}
+
+.ac-task-card p{
+  color:#687585;
+  font-size:18px;
+  line-height:1.65;
+  margin:0;
+}
+
+.ac-task-bottom{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-top:26px;
+}
+
+.ac-task-bottom strong{
+  color:#087fce;
+  font-size:28px;
+}
+
+.ac-task-bottom span,
+.ac-task-bottom button{
+  width:auto;
+  min-width:170px;
+  margin:0;
+  padding:14px 24px;
+  border-radius:30px;
+  background:#eaf6f2;
+  color:#687585;
+  font-size:17px;
+}
+
+.ac-task-bottom button{
+  background:#087dcc;
+  color:#fff;
+  font-weight:800;
+}
+
+@media(max-width:480px){
+
+  .ac-task-title{
+    font-size:31px;
+  }
+
+  .ac-task-subtitle{
+    font-size:16px;
+  }
+
+  .ac-task-tabs button{
+    font-size:15px;
+  }
+
+  .ac-task-card{
+    padding:24px 18px;
+  }
+
+  .ac-task-card h2{
+    font-size:25px;
+  }
+
+  .ac-task-card p{
+    font-size:17px;
+  }
+
+  .ac-task-bottom strong{
+    font-size:25px;
+  }
+
+  .ac-task-bottom span,
+  .ac-task-bottom button{
+    min-width:145px;
+    padding:12px 16px;
+  }
+}
+
+
+/* Deposit opens Payment: show only Buy Active Recent */
+#payment .ac-payment-summary,#payment .ac-pay-summary,#payment .payment-summary{display:none !important;}
+
+/* STATISTICS PAGE */
+{/*STAT*/}.ac-stat-page{
+  padding:0 0 30px;
+  background:#f5f8fc;
+}
+
+.ac-stat-title{
+  text-align:center;
+  color:#087dcc;
+  font-size:32px;
+  font-weight:800;
+  margin:0 0 20px;
+}
+
+.ac-stat-balance{
+  background:#087dcc;
+  color:#fff;
+  border-radius:25px;
+  padding:22px;
+  margin-bottom:16px;
+  box-shadow:0 5px 18px #087dcc25;
+}
+
+.ac-stat-small{
+  font-size:15px;
+  opacity:.85;
+}
+
+.ac-stat-big{
+  font-size:34px;
+  font-weight:800;
+  margin-top:6px;
+}
+
+.ac-stat-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.ac-stat-card{
+  background:#fff;
+  border:1px solid #e7edf3;
+  border-radius:22px;
+  padding:17px;
+  box-shadow:0 4px 15px #0000000b;
+}
+
+.ac-stat-icon{
+  width:43px;
+  height:43px;
+  border-radius:50%;
+  background:#eaf6ff;
+  color:#087dcc;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:800;
+}
+
+.ac-stat-label{
+  color:#687585;
+  font-size:15px;
+  margin-top:12px;
+}
+
+.ac-stat-value{
+  color:#18212b;
+  font-size:22px;
+  font-weight:800;
+  margin-top:5px;
+}
+
+.ac-stat-note{
+  color:#9aa5b1;
+  font-size:12px;
+  margin-top:4px;
+}
+
+.ac-stat-orders{
+  background:#fff;
+  border:1px solid #e7edf3;
+  border-radius:24px;
+  padding:20px;
+  margin-top:14px;
+  box-shadow:0 4px 15px #0000000b;
+}
+
+.ac-stat-orders h2{
+  margin:0 0 15px;
+  color:#18212b;
+  font-size:22px;
+}
+
+.ac-stat-order-row{
+  display:flex;
+  justify-content:space-between;
+  padding:13px 0;
+  border-bottom:1px solid #eef2f5;
+  color:#687585;
+}
+
+.ac-stat-order-row strong{
+  color:#087dcc;
+}
+
+.ac-stat-income{
+  margin-top:17px;
+  padding:17px;
+  border-radius:18px;
+  background:#eaf6ff;
+  color:#687585;
+}
+
+.ac-stat-income strong{
+  display:block;
+  color:#087dcc;
+  font-size:28px;
+  margin-top:5px;
+}
+
+</style>
+
+<div class="ac-dashboard">
+
+  <div class="ac-head">
+    <div>
+      <div class="ac-brand">ACPay</div>
+      <div class="ac-tag">Secure • Fast • Reliable</div>
+    </div>
+    <div class="ac-icons">♢ •</div>
+  </div>
+
+  <div class="ac-user">
+    <div class="ac-avatar" id="dashboardAvatar">A</div>
+    <div>
+      <div class="ac-user-name" id="dashboardUsername">User</div>
+      <div class="ac-user-id" id="dashboardUserId">ID: -</div>
+    </div>
+    <div class="ac-verified">✓ Verified</div>
+  </div>
+
+  <!-- Existing live balance connection preserved -->
+  <div class="ac-balance">
+    <div class="ac-balance-label">Available Balance</div>
+    <div class="ac-balance-value">₹<span id="balance">0</span></div>
+    <div class="ac-balance-bottom">
+      <span>◉ View Balance</span>
+      <button class="ac-detail" type="button" onclick="openBalanceDetails()">Details ›</button>
+    </div>
+  </div>
+
+  <!-- Fixed, non-clickable 8.5% banner -->
+  <div class="ac-profit" aria-label="Daily Profit 8.5 percent">
+    <div class="ac-profit-icon">↗</div>
+    <div>
+      <div class="ac-profit-title">Daily Profit</div>
+      <div class="ac-profit-value">8.5%</div>
+    </div>
+    <div class="ac-profit-right">
+      Grow Your<br>Balance Daily<br>
+      <span>Safe • Stable • Reliable</span>
+    </div>
+  </div>
+  <!-- Existing Deposit / Withdrawal functions preserved -->
+  <div class="ac-actions">
+    <button class="ac-action deposit" type="button" onclick="openDeposit()">
+      ↑ Deposit
+      <small>₹ 0 &nbsp; ›</small>
+    </button>
+
+    <button class="ac-action withdraw" type="button" onclick="openWithdrawal()">
+      ↓ Withdrawal
+      <small>₹ 0 &nbsp; ›</small>
+    </button>
+  </div>
+
+  <div class="ac-shortcuts">
+    <button class="ac-shortcut" type="button" onclick="openUSDTDeposit()">
+      <span class="ico">◉</span>USDT
+    </button>
+
+    <button class="ac-shortcut" type="button" onclick="show('tasks')">
+      <span class="ico">☑</span>Task
+    </button>
+
+    <button class="ac-shortcut" type="button" onclick="openTeam()">
+      <span class="ico">♟</span>Team
+    </button>
+
+    <button class="ac-shortcut" type="button" onclick="openOrder()">
+      <span class="ico">▣</span>Order
+    </button>
+  </div>
+
+  <div class="ac-reward">
+    <div class="ac-reward-title">🎁 NEWCOMER REWARDS</div>
+    <div class="ac-reward-status">In progress</div>
+    <div class="ac-reward-text">
+      You need to complete at least one order to start.
+    </div>
+  </div>
+
+</div>
+
+</section>
+
+
+<!-- USDT DEPOSIT -->
+<section id="usdtDeposit" class="hidden">
+
+<div class="ac-page-header">
+  <button type="button" class="back-btn" onclick="show('home')">‹</button>
+  <h2>USDT Deposit</h2>
+</div>
+
+<div class="card">
+  <div class="small">Deposit Wallet Address</div>
+  <div style="display:flex;gap:6px;margin-top:8px;width:100%;">
+    <input
+      id="userUSDTWallet"
+      readonly
+      style="flex:1;min-width:0;width:100%;"
+    >
+    <button
+      onclick="copyUserUSDTWallet()"
+      style="width:58px;min-width:58px;padding:8px 5px;"
+    >
+      Copy
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="small">Deposit Amount (USDT 118 INR)</div>
+  <input
+    id="userUSDTAmount"
+    type="number"
+    min="5"
+    max="10"
+    step="0.01"
+    placeholder="Enter USDT amount"
+    oninput="updateUSDTINRCalculation()"
+  >
+
+  <div style="margin-top:8px;font-size:13px;color:#666;font-weight:600;">
+    Minimum: 5 USDT &nbsp; | &nbsp; Maximum: 10 USDT
+  </div>
+
+  <div id="usdtINRCalculation"
+    style="
+      margin-top:12px;
+      padding:14px 16px;
+      background:#e5f6ed;
+      border-radius:18px;
+      font-size:17px;
+      font-weight:700;
+      color:#087f4f;
+    ">
+    You will receive ₹0.00 in your wallet (0 × ₹118)
+  </div>
+
+  <div id="usdtAmountWarning" style="display:none;margin-top:8px;color:#dc2626;font-size:13px;font-weight:600;">
+  </div>
+
+  <button onclick="submitUSDTDeposit()" style="width:100%;margin-top:10px;">
+    Submit Deposit
+  </button>
+</div>
+
+
+
+</section>
+
+<!-- WITHDRAWAL -->
+<section id="withdrawal" class="hidden">
+
+<h2>Withdrawal</h2>
+
+<div class="card">
+  <div class="small">Available Balance</div>
+  <div class="balance">
+    ₹<span id="withdrawBalance">0</span>
+  </div>
+</div>
+
+<div class="card">
+  <h3>UPI Withdraw</h3>
+
+  <div class="small">
+    Enter and save your UPI ID
+  </div>
+
+  <input
+    id="withdrawUpi"
+    placeholder="Enter UPI ID"
+    autocomplete="off"
+  >
+
+  <button onclick="saveWithdrawUpi()">
+    Save UPI ID
+  </button>
+
+  <div
+    id="withdrawUpiSaved"
+    class="withdraw-success hidden">
+    <span class="check">✓</span>
+    UPI ID saved successfully
+  </div>
+</div>
+
+<div class="card">
+
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  ">
+
+    <div>
+      <b>Withdrawal</b>
+      <div class="small" id="withdrawToggleText">
+        OFF
+      </div>
+    </div>
+
+    <button
+      id="withdrawToggle"
+      class="withdraw-switch"
+      onclick="toggleWithdrawal()"
+      aria-label="Toggle withdrawal">
+      <span class="switch-label">OFF</span>
+      <span class="switch-knob"></span>
+    </button>
+
+  </div>
+
+</div>
+
+<button onclick="show('home')">
+  Back to Dashboard
+</button>
+
+
+<div class="card" style="margin-top:14px;">
+  <h3 style="margin:0 0 12px;">Withdrawal History</h3>
+  <div id="withdrawalHistory">
+    Loading...
+  </div>
+</div>
+</section>
+
+
+<!-- PAYMENT -->
+<section id="payment" class="hidden">
+<h2 id="paymentTitle">Payment</h2>
+
+<div class="grid">
+  <div class="card">
+    <div class="small">Income Rate</div>
+    <div style="font-size:24px;font-weight:700">8.5%</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Balance</div>
+    <div id="paymentBalance" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Reward</div>
+    <div id="paymentReward" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending</div>
+    <div id="paymentPending" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+</div>
+
+<div class="card" style="padding:8px">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+    <button id="tabBuy" onclick="paymentTab('buy')"
+      style="margin:0;background:#7c3aed">
+      Buy
+    </button>
+
+    <button id="tabActive" onclick="paymentTab('active')"
+      style="margin:0;background:#eee;color:#333">
+      Active
+    </button>
+
+    <button id="tabRecent" onclick="paymentTab('recent')"
+      style="margin:0;background:#eee;color:#333">
+      Recent
+    </button>
+  </div>
+</div>
+
+<div id="paymentOrders"></div>
+
+<div id="noPayment" class="msg hidden">
+  No payment orders available.
+</div>
+
+<div id="proofBox" class="card hidden">
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Payment Details</h3>
+
+    <button class="secondary"
+      style="width:auto;margin:0"
+      onclick="cancelProof()">
+      Cancel
+    </button>
+  </div>
+
+  <div class="small" style="margin-top:14px">UPI ID</div>
+
+  <div class="upi-row">
+    <input id="upiId" readonly>
+    <button class="copy-btn" onclick="copyUPI()">Copy</button>
+  </div>
+
+  <div class="small">Amount</div>
+
+  <div id="proofAmount" class="amount">₹0.00</div>
+
+  <div class="small">Income 8.5%</div>
+
+  <div id="proofIncome"
+    style="font-size:20px;font-weight:700;margin:5px 0 12px">
+    ₹0.00
+  </div>
+
+  <div class="small">Code</div>
+
+  <div id="proofCode"
+    style="font-size:22px;font-weight:700;margin:6px 0 12px">
+    -
+  </div>
+
+  <div id="countdown"
+    class="msg"
+    style="text-align:center;font-weight:700">
+    Expire in 15:00
+  </div>
+
+  <p class="small">
+    Payment karne ke baad screenshot upload karein.
+  </p>
+
+  <input id="screenshot"
+    type="file"
+    accept="image/png,image/jpeg,image/webp"
+    onchange="previewImage(event)">
+
+  <img id="preview">
+
+  <button class="green" onclick="submitProof()">
+    Submit Payment
+  </button>
+
+</div>
+</section>
+
+
+<!-- ADMIN DASHBOARD -->
+<section id="admin" class="hidden">
+
+<h2>Admin Dashboard</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="small">Total Users</div>
+    <div id="adminTotalUsers"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Total Balance</div>
+    <div id="adminTotalBalance"
+      style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending Orders</div>
+    <div id="adminPendingOrders"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending Withdrawals</div>
+    <div id="adminPendingWithdrawals"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+</div>
+
+<div class="card" style="padding:8px">
+
+  <div style="
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:4px;
+  ">
+
+    <button id="adminTabDashboard"
+      onclick="adminTab('dashboard')"
+      style="margin:0;font-size:12px">
+      Dashboard
+    </button>
+
+    <button id="adminTabUPI"
+      onclick="adminTab('upi')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      UPI
+    </button>
+
+    <button id="adminTabUSDT"
+      onclick="adminTab('usdt')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      USDT
+    </button>
+
+    <button id="adminTabWithdraw"
+      onclick="adminTab('withdraw')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      Withdraw
+    </button>
+
+    <button id="adminTabUsers"
+      onclick="adminTab('users')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      Users
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ADMIN DASHBOARD HOME -->
+
+<div id="adminDashboardTab">
+
+  <div class="card">
+
+    <h3>Admin Dashboard</h3>
+
+    <p class="small">
+      Yahan se ACPay ke important sections manage honge.
+    </p>
+
+    <div class="msg">
+      <strong>UPI</strong><br>
+      Payment tasks create aur approve/reject karein.
+    </div>
+
+    <div class="msg">
+      <strong>USDT Deposit</strong><br>
+      Deposit wallet aur USDT settings manage karein.
+    </div>
+
+    <div class="msg">
+      <strong>UPI Withdrawal</strong><br>
+      User withdrawal requests yahan manage hongi.
+    </div>
+
+    <div class="msg">
+      <strong>Users</strong><br>
+      User ID search karke account manage karein.
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- UPI -->
+
+<div id="adminUpiTab" class="hidden">
+
+  <div class="card">
+
+    <h3>Create UPI Payment Order</h3>
+
+    <input
+      id="adminUpi"
+      placeholder="UPI ID e.g. acpay@upi"
+    >
+
+    <input
+      id="adminAmount"
+      type="number"
+      placeholder="Amount"
+    >
+
+    <button onclick="createPayment()">
+      Create Payment Order
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h3>UPI Payment Orders</h3>
+
+    <div id="adminPayments">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- USDT DEPOSIT -->
+
+<div id="adminUSDTTab" class="hidden">
+
+  <div class="card">
+
+    <h3>USDT Deposit Settings</h3>
+
+    <label class="small">Wallet Address</label>
+
+    <input
+      id="adminUSDTWallet"
+      placeholder="Enter USDT wallet address"
+    >
+
+    <button onclick="copyAdminUSDTWallet()">
+      Copy Wallet
+    </button>
+
+    <hr>
+
+    <label class="small">
+      Minimum USDT
+    </label>
+
+    <input
+      id="adminUSDTMin"
+      type="number"
+      value="5"
+      min="5"
+      max="10"
+    >
+
+    <label class="small">
+      Maximum USDT
+    </label>
+
+    <input
+      id="adminUSDTMax"
+      type="number"
+      value="10"
+      min="5"
+      max="10"
+    >
+
+    <button onclick="saveUSDTSettings()">
+      Save USDT Settings
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- WITHDRAW -->
+
+<div id="adminWithdrawTab" class="hidden">
+
+  <div class="card">
+
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+    ">
+
+      <button id="withdrawUPITab"
+        onclick="withdrawTab('upi')"
+        style="margin:0">
+        UPI Withdrawal
+      </button>
+
+      <button id="withdrawUSDTTab"
+        onclick="withdrawTab('usdt')"
+        style="margin:0;background:#eee;color:#333">
+        USDT
+      </button>
+
+    </div>
+
+  </div>
+
+  <div id="adminUPIWithdrawList">
+
+    <div class="card">
+      <h3>UPI Withdrawal Requests</h3>
+      <div id="adminWithdrawals">
+        No withdrawal requests yet.
+      </div>
+    </div>
+
+  </div>
+
+  <div id="adminUSDTWithdrawList" class="hidden">
+
+    <div class="card">
+      <h3>USDT Withdrawal</h3>
+
+      <div class="msg">
+        USDT withdrawal is disabled.
+        ACPay mein withdrawal sirf UPI se hoga.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- USERS -->
+
+<div id="adminUsersTab" class="hidden">
+
+  <div class="card">
+
+    <h3>Search User</h3>
+
+    <input
+      id="adminUserSearch"
+      placeholder="Enter User ID"
+    >
+
+    <button onclick="searchAdminUser()">
+      Search User
+    </button>
+
+  </div>
+
+  <div id="adminUserResult"></div>
+
+</div>
+
+
+<button
+  class="secondary"
+  onclick="adminLogout()">
+  Admin Logout
+</button>
+
+</section>
+
+</main>
+
+
+<!-- STATISTICS -->
+<section id="statistics" class="hidden ac-stat-page">
+
+  <div class="ac-stat-title">Statistics</div>
+
+  <div class="ac-stat-balance">
+    <div class="ac-stat-small">Balance</div>
+    <div class="ac-stat-big">₹<span id="statBalance">0.00</span></div>
+  </div>
+
+  <div class="ac-stat-grid">
+
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon">↓</div>
+      <div class="ac-stat-label">Sell</div>
+      <div class="ac-stat-value">₹<span id="statSell">0.00</span></div>
+      <div class="ac-stat-note">Today</div>
+    </div>
+
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon">↑</div>
+      <div class="ac-stat-label">Deposit</div>
+      <div class="ac-stat-value">₹<span id="statDeposit">0.00</span></div>
+      <div class="ac-stat-note">Today</div>
+    </div>
+
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon">★</div>
+      <div class="ac-stat-label">Commission</div>
+      <div class="ac-stat-value">₹<span id="statCommission">0.00</span></div>
+      <div class="ac-stat-note">Coming soon</div>
+    </div>
+
+    <div class="ac-stat-card">
+      <div class="ac-stat-icon">₮</div>
+      <div class="ac-stat-label">USDT Rate</div>
+      <div class="ac-stat-value">₹<span id="statUsdt">118</span></div>
+      <div class="ac-stat-note">Real time rate</div>
+    </div>
+
+  </div>
+
+  <div class="ac-stat-orders">
+
+    <h2>In Process Orders</h2>
+
+    <div class="ac-stat-order-row">
+      <span>Active Orders</span>
+      <strong id="statOrders">0</strong>
+    </div>
+
+    <div class="ac-stat-order-row">
+      <span>In Process Amount</span>
+      <strong>₹<span id="statProcessAmount">0.00</span></strong>
+    </div>
+
+    <div class="ac-stat-order-row">
+      <span>Commission Rate</span>
+      <strong>8.5%</strong>
+    </div>
+
+    <div class="ac-stat-income">
+      <div>Estimated Income</div>
+      <strong>₹<span id="statIncome">0.00</span></strong>
+    </div>
+
+  </div>
+
+</section>
+
+<!-- TASK REWARDS -->
+
+<section id="balanceDetails" class="hidden ac-balance-details-page">
+
+  <div class="ac-bd-header">
+    <button class="ac-bd-back" onclick="show('home')">‹</button>
+    <div>Balance Details</div>
+    <div style="width:36px"></div>
+  </div>
+
+  <div class="ac-bd-balance-card">
+    <div class="ac-bd-balance-label">Available Balance</div>
+    <div class="ac-bd-balance-value">₹<span id="bdBalance">0.00</span></div>
+  </div>
+
+  <div class="ac-bd-tabs">
+    <button class="active" onclick="filterBalanceDetails('all',this)">All</button>
+    <button onclick="filterBalanceDetails('deposit',this)">Deposit</button>
+    <button onclick="filterBalanceDetails('withdraw',this)">Withdraw</button>
+    <button onclick="filterBalanceDetails('failed',this)">Failed</button>
+  </div>
+
+  <div id="balanceDetailsList" class="ac-bd-list">
+    <div class="ac-bd-empty">Loading...</div>
+  </div>
+
+</section>
+
+<section id="tasks" class="hidden ac-task-page">
+
+  <div class="ac-task-header">
+    <button class="ac-task-back" type="button" onclick="show('home')">‹</button>
+    <div>
+      <div class="ac-task-title">Task Rewards</div>
+      <div class="ac-task-subtitle">Earn tokens by completing tasks</div>
+    </div>
+  </div>
+
+  <div class="ac-task-tabs">
+    <button id="newbieTab" class="active" type="button"
+      onclick="showTaskTab('newbie')">
+      Newbie Tasks
+    </button>
+
+    <button id="teamTab" type="button"
+      onclick="showTaskTab('team')">
+      Team Growth
+    </button>
+  </div>
+
+  <div id="newbieTask" class="ac-task-card">
+
+    <div class="ac-task-row">
+      <strong>·NEWBIE</strong>
+      <span>0 / 5,000</span>
+    </div>
+
+    <div class="ac-task-progress">
+      <div></div>
+    </div>
+
+    <h2>New Member Tasks</h2>
+
+    <p>
+      Register and start trading. Once your total
+      trading amount reaches 5,000.
+    </p>
+
+    <div class="ac-task-bottom">
+      <strong>★ 200</strong>
+      <span>Not Started</span>
+    </div>
+
+  </div>
+
+  <div id="teamTask" class="ac-task-card hidden">
+
+    <div class="ac-task-row">
+      <strong>·INVITE</strong>
+      <span>0 invited</span>
+    </div>
+
+    <p>
+      Invite friends to complete the newbie task and
+      get rewarded automatically.
+    </p>
+
+    <div class="ac-task-bottom">
+      <strong>★ 0</strong>
+      <button type="button"
+        onclick="alert('Invite feature coming soon')">
+        Invite
+      </button>
+    </div>
+
+  </div>
+
+</section>
+
+
+<!-- TEAM SECTION -->
+<section id="team" class="hidden">
+
+  <div class="ac-page">
+
+    <div class="ac-page-header">
+      <button type="button" class="back-btn" onclick="show('home')">‹</button>
+      <h2>Team</h2>
+    </div>
+
+    <div class="ac-reward">
+      <div class="ac-reward-title">TEAM REWARDS</div>
+      <div class="ac-reward-status" id="teamTotalCommission">₹0.00</div>
+      <div class="ac-reward-text">
+        Total commission earned from your team
+      </div>
+    </div>
+
+    <div class="grid">
+
+      <div class="card">
+        <strong id="teamTodayCommission">₹0.00</strong>
+        <span>Today</span>
+      </div>
+
+      <div class="card">
+        <strong id="teamYesterdayCommission">₹0.00</strong>
+        <span>Yesterday</span>
+      </div>
+
+      <div class="card">
+        <strong id="teamMembers">0</strong>
+        <span>Team Members</span>
+      </div>
+
+      <div class="card">
+        <strong id="teamDeposit">₹0.00</strong>
+        <span>Team Deposit</span>
+      </div>
+
+    </div>
+
+    <div class="ac-task-tabs">
+
+      <button id="teamTabA"
+        class="active"
+        type="button"
+        onclick="showTeamLevel('A')">
+        Level A
+      </button>
+
+      <button id="teamTabB"
+        type="button"
+        onclick="showTeamLevel('B')">
+        Level B
+      </button>
+
+      <button id="teamTabC"
+        type="button"
+        onclick="showTeamLevel('C')">
+        Level C
+      </button>
+
+    </div>
+
+    <div id="teamMembersList" class="ac-task-card">
+      <p>Loading team...</p>
+    </div>
+
+    <div class="ac-team-share">
+
+      <h2>Share APP to</h2>
+
+      <div class="ac-team-share-grid">
+
+        <button type="button" onclick="shareTeam('telegram')">
+          <span class="share-icon">➤</span>
+          <strong>Telegram</strong>
+        </button>
+
+        <button type="button" onclick="shareTeam('facebook')">
+          <span class="share-icon">f</span>
+          <strong>Facebook</strong>
+        </button>
+
+        <button type="button" onclick="shareTeam('whatsapp')">
+          <span class="share-icon">◉</span>
+          <strong>WhatsApp</strong>
+        </button>
+
+        <button type="button" onclick="shareTeam('copy')">
+          <span class="share-icon">🔗</span>
+          <strong>Copy link</strong>
+        </button>
+
+      </div>
+
+      <div class="ac-team-referral-code">
+        <span>Your referral code</span>
+        <strong id="teamReferralCode">-</strong>
+      </div>
+
+    </div>
+
+  </div>
+
+</section>
+
+<!-- MY SECTION -->
+<section id="my" class="hidden ac-my-page">
+
+  <div class="ac-my-title">My Asset</div>
+
+  <div class="ac-asset-card">
+
+    <div class="ac-asset-grid">
+
+      <div class="ac-asset-item">
+        <div class="ac-asset-icon">▭</div>
+        <div class="ac-asset-text">
+          <div class="ac-asset-label">Deposit</div>
+          <div class="ac-asset-value">₹ 0</div>
+        </div>
+      </div>
+
+      <div class="ac-asset-item">
+        <div class="ac-asset-icon">▤</div>
+        <div class="ac-asset-text">
+          <div class="ac-asset-label">Withdraw</div>
+          <div class="ac-asset-value">₹ 0</div>
+        </div>
+      </div>
+
+      <div class="ac-asset-item">
+        <div class="ac-asset-icon">↻</div>
+        <div class="ac-asset-text">
+          <div class="ac-asset-label">Commission</div>
+          <div class="ac-asset-value">₹ 0</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+
+  <div class="ac-my-options">
+
+    <button class="ac-my-option" onclick="openBalanceDetails()">
+      <span class="ac-option-icon">▣</span>
+      <strong>Wallet</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="openDeposit()">
+      <span class="ac-option-icon">◉</span>
+      <strong>Deposit</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="openOrder()">
+      <span class="ac-option-icon">▤</span>
+      <strong>Order</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="openWithdrawal()">
+      <span class="ac-option-icon">▥</span>
+      <strong>Withdraw</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="openTeam()">
+      <span class="ac-option-icon">♟</span>
+      <strong>Team</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="show('tasks')">
+      <span class="ac-option-icon">🎁</span>
+      <strong>Task</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="alert('Service section coming soon')">
+      <span class="ac-option-icon">♧</span>
+      <strong>Service</strong>
+    </button>
+
+    <button class="ac-my-option" onclick="alert('Channel section coming soon')">
+      <span class="ac-option-icon">⚑</span>
+      <strong>Channel</strong>
+    </button>
+
+  </div>
+
+  <div class="ac-my-info">
+    ID 19859 · v1.0.0
+  </div>
+
+  <button class="ac-my-logout" onclick="logout()">Logout</button>
+
+</section>
+
+
+<!-- LIVE CHAT / WHATSAPP -->
+<a
+  class="ac-live-chat"
+  href="https://wa.me/91XXXXXXXXXX?text=Hello%20ACPay%20Support"
+  target="_blank"
+  rel="noopener"
+  aria-label="WhatsApp Live Chat">
+  <span class="ac-chat-icon">☏</span>
+  <span class="ac-chat-text">Live Chat</span>
+</a>
+
+<!-- NAV -->
+<nav id="nav" class="hidden">
+<button onclick="openBottomPage('home')">
+<span>⌂</span>
+Home
+</button>
+
+<button onclick="openBottomPage('payment')">
+<span>▣</span>
+Payment
+</button>
+
+<button onclick="openBottomPage('usdtDeposit')">
+<span>◉</span>
+USDT
+</button>
+
+<button onclick="openBottomPage('statistics')">
+<span>♟</span>
+Statistics
+</button>
+
+<button onclick="openBottomPage('my')">
+<span>●</span>
+My
+</button>
+</nav>
+
+</div>
+
+
+<script>
+
+const API='/api';
+
+let currentPayment=null;
+let adminToken=localStorage.getItem('adminToken')||null;
+
+
+
+/* TEAM */
+
+let currentTeamLevel='A';
+let teamData=null;
+
+async function openTeam(fromHistory=false){
+
+  try{
+
+    let parentPage=sessionStorage.getItem('acpay_team_parent')||'home';
+
+    if(!fromHistory){
+
+      const currentHash=(location.hash||'')
+        .replace(/^#/,'')
+        .split('?')[0];
+
+      if(currentHash==='my'){
+        parentPage='my';
+      }else{
+        parentPage='home';
+      }
+
+      sessionStorage.setItem('acpay_team_parent',parentPage);
+
+    }
+
+    show('team',false);
+
+    const data=await req('/team',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    teamData=data;
+
+    const summary=data.summary||{};
+
+    const total=document.getElementById('teamTotalCommission');
+    if(total)
+      total.textContent='₹'+Number(summary.total_commission||0).toFixed(2);
+
+    const today=document.getElementById('teamTodayCommission');
+    if(today)
+      today.textContent='₹'+Number(summary.today_commission||0).toFixed(2);
+
+    const yesterday=document.getElementById('teamYesterdayCommission');
+    if(yesterday)
+      yesterday.textContent='₹'+Number(summary.yesterday_commission||0).toFixed(2);
+
+    const members=document.getElementById('teamMembers');
+    if(members)
+      members.textContent=String(summary.total_members||0);
+
+    const deposit=document.getElementById('teamDeposit');
+    if(deposit)
+      deposit.textContent='₹'+Number(summary.total_team_deposit||0).toFixed(2);
+
+    const code=document.getElementById('teamReferralCode');
+    if(code)
+      code.textContent=data.user?.referral_code||'-';
+
+    showTeamLevel('A');
+
+    if(!fromHistory && !restoringPage){
+
+      history.pushState(
+        {page:parentPage},
+        '',
+        '#'+parentPage
+      );
+
+      history.pushState(
+        {page:'team',backPage:parentPage},
+        '',
+        '#team'
+      );
+
+    }
+
+    window.scrollTo(0,0);
+
+  }catch(e){
+
+    console.error('Team error:',e);
+    alert(e.message||'Team load nahi ho paya');
+
+  }
+
+}
+function showTeamLevel(level){
+
+  currentTeamLevel=level;
+
+  const tabs={
+    A:document.getElementById('teamTabA'),
+    B:document.getElementById('teamTabB'),
+    C:document.getElementById('teamTabC')
+  };
+
+  Object.values(tabs).forEach(tab=>{
+    if(tab) tab.classList.remove('active');
+  });
+
+  if(tabs[level])
+    tabs[level].classList.add('active');
+
+  const list=document.getElementById('teamMembersList');
+
+  if(!list) return;
+
+  const members=
+    teamData &&
+    teamData.levels &&
+    teamData.levels[level]
+      ? teamData.levels[level]
+      : [];
+
+  if(!members.length){
+
+    list.innerHTML=
+      '<p>No members in Level '+level+' yet.</p>';
+
+    return;
+  }
+
+  list.innerHTML=members.map(user=>{
+
+    const date=user.created_at
+      ? new Date(user.created_at).toLocaleDateString()
+      : '';
+
+    return `
+      <div class="ac-task-row">
+        <strong>${escapeHtml(user.username||'User')}</strong>
+        <span>ID: ${escapeHtml(String(user.id||''))}</span>
+      </div>
+      <div class="ac-task-bottom">
+        <span>Joined ${escapeHtml(date)}</span>
+        <span>Level ${level}</span>
+      </div>
+    `;
+
+  }).join('');
+
+}
+
+function copyTeamLink(){
+
+  if(!teamData || !teamData.user){
+
+    alert('Team data load nahi hua');
+
+    return;
+  }
+
+  const code=teamData.user.referral_code||'';
+
+  if(!code){
+
+    alert('Referral code available nahi hai');
+
+    return;
+  }
+
+  const link=
+    location.origin+
+    location.pathname+
+    '#register?ref='+
+    encodeURIComponent(code);
+
+  navigator.clipboard.writeText(link)
+    .then(()=>{
+      alert('Invitation link copied');
+    })
+    .catch(()=>{
+      prompt('Invitation link:',link);
+    });
+
+}
+
+
+
+/* TEAM SHARING */
+
+function getTeamInviteLink(){
+
+  const code=
+    teamData &&
+    teamData.user &&
+    teamData.user.referral_code
+      ? teamData.user.referral_code
+      : '';
+
+  if(!code){
+    return '';
+  }
+
+  return location.origin+
+    location.pathname+
+    '#register?ref='+
+    encodeURIComponent(code);
+}
+
+function shareTeam(type){
+
+  const link=getTeamInviteLink();
+
+  if(!link){
+
+    alert('Referral link abhi available nahi hai');
+    return;
+  }
+
+  const text=
+    'Join ACPay using my invitation link: '+
+    link;
+
+  if(type==='copy'){
+
+    if(navigator.clipboard){
+
+      navigator.clipboard.writeText(link)
+        .then(()=>{
+          alert('Invitation link copied');
+        })
+        .catch(()=>{
+          prompt('Copy this invitation link:',link);
+        });
+
+    }else{
+
+      prompt('Copy this invitation link:',link);
+
+    }
+
+    return;
+  }
+
+  if(type==='whatsapp'){
+
+    window.open(
+      'https://wa.me/?text='+
+      encodeURIComponent(text),
+      '_blank'
+    );
+
+    return;
+  }
+
+  if(type==='telegram'){
+
+    window.open(
+      'https://t.me/share/url?url='+
+      encodeURIComponent(link)+
+      '&text='+
+      encodeURIComponent('Join ACPay using my invitation link'),
+      '_blank'
+    );
+
+    return;
+  }
+
+  if(type==='facebook'){
+
+    window.open(
+      'https://www.facebook.com/sharer/sharer.php?u='+
+      encodeURIComponent(link),
+      '_blank'
+    );
+
+    return;
+  }
+
+}
+
+
+/* BOTTOM NAVIGATION */
+
+let bottomNavigation=false;
+
+async function openBottomPage(page){
+
+  try{
+
+    bottomNavigation=true;
+
+    if(page==='home'){
+
+      show('home',false);
+
+    }else if(page==='payment'){
+
+      await openMainPayment();
+
+    }else if(page==='usdtDeposit'){
+
+      await openUSDTDeposit();
+
+    }else if(page==='statistics'){
+
+      await openStatistics();
+
+    }else if(page==='my'){
+
+      show('my',false);
+
+    }
+
+    /* Bottom navigation replaces the current page.
+       Therefore Back returns to the page before the current flow. */
+    history.replaceState({page:page},'','#'+page);
+
+  }catch(e){
+
+    console.error('Bottom navigation error:',e);
+    alert(e.message||'Page open nahi ho paya');
+
+  }finally{
+
+    bottomNavigation=false;
+
+  }
+}
+
+
+/* COMMON */
+
+let restoringPage=false;
+
+
+
+
+
+
+
+
+
+function show(id, addHistory=true){
+
+ if(restoringPage || bottomNavigation) addHistory=false;
+
+ const sections=[
+  'login',
+  'register',
+  'adminLogin',
+  'home',
+  'payment',
+  'deposit',
+  'usdtDeposit',
+  'withdrawal',
+  'balanceDetails',
+  'tasks',
+  'statistics',
+  'my',
+  'team',
+  'admin'
+ ];
+
+ sections.forEach(x=>{
+  const el=document.getElementById(x);
+  if(el) el.classList.add('hidden');
+ });
+
+ const target=document.getElementById(id);
+
+ if(target) target.classList.remove('hidden');
+
+ // Open every section from the top
+ window.scrollTo(0,0);
+
+ const nav=document.getElementById('nav');
+
+ if(id==='home'||id==='payment'||id==='usdtDeposit'||id==='withdrawal'||id==='tasks'||id==='statistics'||id==='my'){
+  nav.classList.remove('hidden');
+ }else{
+  nav.classList.add('hidden');
+ }
+
+ if(addHistory){
+  history.pushState({page:id},'', '#'+id);
+ }
+}
+
+
+/* BROWSER BACK BUTTON */
+
+window.addEventListener('popstate',async function(e){
+
+ const page=e.state && e.state.page
+  ? e.state.page
+  :'home';
+
+ if(page==='login' && localStorage.getItem('token')){
+  show('home',false);
+  history.replaceState({page:'home'},'','#home');
+  return;
+ }
+
+ try{
+  restoringPage=true;
+
+  if(page==='deposit'){
+    await openDeposit();
+  }else if(page==='payment'){
+    await openMainPayment();
+  }else if(page==='usdtDeposit'){
+    await openUSDTDeposit();
+  }else if(page==='withdrawal'){
+    await openWithdrawal();
+  }else if(page==='statistics'){
+    await openStatistics();
+  }else if(page==='team'){
+    await openTeam(true);
+  }else{
+    show(page,false);
+  }
+
+ }catch(err){
+  console.error('Back navigation error:',err);
+  show('home',false);
+ }finally{
+  restoringPage=false;
+ }
+
+});
+
+
+/* RESTORE PAGE AFTER REFRESH */
+
+window.addEventListener('DOMContentLoaded',async function(){
+
+  restoringPage=true;
+
+  if(localStorage.getItem('adminToken')){
+    adminToken=localStorage.getItem('adminToken');
+    show('admin',false);
+    await loadAdminDashboard();
+    await loadAdminPayments();
+    document.body.classList.remove('ac-loading');
+    return;
+  }
+
+  if(localStorage.getItem('token')){
+    await loadMe();
+  }else{
+    show('login',false);
+    history.replaceState({page:'login'},'','#login');
+  }
+
+  restoringPage=false;
+  document.body.classList.remove('ac-loading');
+
+});
+
+
+/* API */
+
+async function req(path,options={}){
+
+ const response=await fetch(API+path,options);
+
+ const data=await response
+  .json()
+  .catch(()=>({}));
+
+ if(!response.ok)
+  throw Error(data.error||'Request failed');
+
+ return data;
+}
+
+
+/* USER REGISTER */
+
+function getReferralCodeFromUrl(){
+
+  const hash=location.hash||'';
+
+  const q=hash.indexOf('?');
+
+  if(q===-1) return '';
+
+  const params=new URLSearchParams(
+    hash.substring(q+1)
+  );
+
+  return params.get('ref')||'';
+}
+
+
+async function register(){
+
+ try{
+
+  const referralCode=getReferralCodeFromUrl();
+
+  await req('/register',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username:document.getElementById('ru').value,
+    password:document.getElementById('rp').value,
+    referral_code:referralCode
+   })
+  });
+
+  alert(
+    referralCode
+      ? 'Registered through referral. Please login.'
+      : 'Registered. Please login.'
+  );
+
+  show('login');
+
+ }catch(e){
+  alert(e.message);
+ }
+}
+
+
+/* USER LOGIN */
+
+async function login(){
+
+ try{
+
+  const data=await req('/login',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username:document.getElementById('lu').value,
+    password:document.getElementById('lp').value
+   })
+  });
+
+  localStorage.token=data.token;
+
+  await loadMe();
+
+ }catch(e){
+  alert(e.message);
+ }
+}
+
+
+/* LOAD USER */
+
+async function loadMe(){
+
+ if(!localStorage.token){
+  show('login');
+  return;
+ }
+
+ try{
+
+  const data=await req('/me',{
+   headers:{
+    Authorization:'Bearer '+localStorage.token
+   }
+  });
+
+  document.getElementById('user').textContent=
+   'Welcome, '+data.user.username;
+
+  document.getElementById('userIdDisplay').textContent=
+   'User ID: '+data.user.id;
+
+  const dashboardUsername=document.getElementById('dashboardUsername');
+  if(dashboardUsername){
+    dashboardUsername.textContent=data.user.username;
+  }
+
+  const dashboardUserId=document.getElementById('dashboardUserId');
+  if(dashboardUserId){
+    dashboardUserId.textContent='ID: '+data.user.id;
+  }
+
+  const dashboardAvatar=document.getElementById('dashboardAvatar');
+  if(dashboardAvatar){
+    dashboardAvatar.textContent=
+      String(data.user.username||'U').charAt(0).toUpperCase();
+  }
+
+  document.getElementById('balance').textContent=
+   data.user.balance;
+
+const savedPage=location.hash
+  ?location.hash.substring(1)
+  :'home';
+
+if(savedPage==='deposit'){
+  await openDeposit();
+  history.replaceState({page:'deposit'},'','#deposit');
+}else if(savedPage==='balanceDetails'){
+  await openBalanceDetails();
+  history.replaceState({page:'balanceDetails'},'','#balanceDetails');
+}else if(savedPage==='order'){
+  await openOrder();
+  history.replaceState({page:'order'},'','#order');
+}else if(savedPage==='payment'){
+  await openPayment();
+  history.replaceState({page:'payment'},'','#payment');
+}else if(savedPage==='usdtDeposit'){
+  await openUSDTDeposit();
+  history.replaceState({page:'usdtDeposit'},'','#usdtDeposit');
+}else if(savedPage==='withdrawal'){
+  await openWithdrawal();
+  history.replaceState({page:'withdrawal'},'','#withdrawal');
+}else if(savedPage==='tasks'){
+  show('tasks',false);
+  history.replaceState({page:'tasks'},'','#tasks');
+}else if(savedPage==='statistics'){
+  await openStatistics();
+  history.replaceState({page:'statistics'},'','#statistics');
+}else if(savedPage==='my'){
+  show('my',false);
+  history.replaceState({page:'my'},'','#my');
+}else if(savedPage==='team'){
+  await openTeam();
+  history.replaceState({page:'team'},'','#team');
+}else{
+  show('home',false);
+  history.replaceState({page:'home'},'','#home');
+}
+ }catch(e){
+
+  localStorage.removeItem('token');
+  show('login');
+
+ }
+}
+
+
+/* USER LOGOUT */
+
+function logout(){
+
+ localStorage.removeItem('token');
+
+ currentPayment=null;
+
+ show('login');
+}
+
+
+/* PAYMENT */
+
+let paymentTabName='buy';
+let paymentCache=[];
+let paymentTimer=null;
+
+
+/* PAYMENT MAIN */
+
+async function openUSDTDeposit(){
+  try{
+    const data = await req('/usdt/settings',{
+      headers:{Authorization:'Bearer '+localStorage.token}
+    });
+
+    document.getElementById('userUSDTWallet').value =
+      data.wallet_address || '';
+
+    document.getElementById('userUSDTAmount').value = '';
+
+    show('usdtDeposit');
+  }catch(e){
+    alert(e.message || 'USDT settings load nahi ho payi');
+  }
+}
+
+function copyUserUSDTWallet(){
+  const input=document.getElementById('userUSDTWallet');
+
+  if(!input.value){
+    alert('USDT wallet address available nahi hai');
+    return;
+  }
+
+  navigator.clipboard.writeText(input.value)
+    .then(()=>alert('USDT wallet address copied'))
+    .catch(()=>{
+      input.select();
+      document.execCommand('copy');
+      alert('USDT wallet address copied');
+    });
+}
+
+function updateUSDTINRCalculation(){
+
+  const input=document.getElementById('userUSDTAmount');
+  const result=document.getElementById('usdtINRCalculation');
+
+  if(!input || !result) return;
+
+  const amount=Number(input.value)||0;
+  const rate=118;
+  const inr=amount*rate;
+
+  result.textContent=
+    `You will receive ₹${inr.toFixed(2)} in your wallet (${amount} × ₹${rate})`;
+}
+
+
+async function submitUSDTDeposit(){
+  const input=document.getElementById('userUSDTAmount');
+  const amount=Number(input.value);
+
+  if(!Number.isFinite(amount) || amount<=0){
+    alert('Deposit amount enter karo');
+    return;
+  }
+
+  const warning=document.getElementById('usdtAmountWarning');
+
+  if(amount < 5){
+    warning.textContent='Minimum deposit 5 USDT';
+    warning.style.display='block';
+    return;
+  }
+
+  if(amount > 10){
+    warning.textContent='Maximum deposit 10 USDT';
+    warning.style.display='block';
+    return;
+  }
+
+  warning.style.display='none';
+
+  try{
+    const data=await req('/usdt/deposit',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({amount})
+    });
+
+    alert(data.message || 'USDT deposit request submitted');
+    input.value='';
+  }catch(e){
+    alert(e.message || 'Deposit submit nahi ho paya');
+  }
+}
+
+async function openPayment(){
+
+  show('payment');
+
+  document.getElementById('proofBox').classList.add('hidden');
+
+  try{
+
+    const [data,me]=await Promise.all([
+      req('/payments',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      }),
+
+      req('/me',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      })
+    ]);
+
+    paymentCache=data.payments||[];
+
+    document.getElementById('paymentBalance').textContent=
+      '₹'+Number(
+        me.user ? me.user.balance : me.balance || 0
+      ).toFixed(2);
+
+    document.getElementById('paymentReward').textContent=
+      '₹0.00';
+
+    const pending=paymentCache
+      .filter(x=>x.status==='pending_review')
+      .reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+    document.getElementById('paymentPending').textContent=
+      '₹'+pending.toFixed(2);
+
+    paymentTab(paymentTabName);
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+
+/* PAYMENT TABS */
+
+function paymentTab(tab){
+
+  paymentTabName=tab;
+
+  const buttons={
+    buy:document.getElementById('tabBuy'),
+    active:document.getElementById('tabActive'),
+    recent:document.getElementById('tabRecent')
+  };
+
+  Object.keys(buttons).forEach(k=>{
+    buttons[k].style.margin='0';
+
+    if(k===tab){
+      buttons[k].style.background='#7c3aed';
+      buttons[k].style.color='#fff';
+    }else{
+      buttons[k].style.background='#eee';
+      buttons[k].style.color='#333';
+    }
+  });
+
+  const container=document.getElementById('paymentOrders');
+  container.innerHTML='';
+
+  let list=[];
+
+  if(tab==='buy'){
+
+    // Admin-created orders which nobody has claimed yet.
+    list=paymentCache.filter(x=>
+      x.status==='active' &&
+      !x.user_id
+    );
+
+  }else if(tab==='active'){
+
+    // Orders currently claimed by this user.
+    list=paymentCache.filter(x=>
+      x.status==='claimed'
+    );
+
+  }else{
+
+    // Finished / cancelled / expired / pending orders.
+    list=paymentCache.filter(x=>
+      x.status==='pending_review' ||
+      x.status==='cancelled' ||
+      x.status==='expired' ||
+      x.status==='approved' ||
+      x.status==='rejected'
+    );
+
+  }
+
+  if(list.length===0){
+
+    document.getElementById('noPayment').textContent=
+      tab==='buy'
+        ? 'No payment orders available.'
+        : tab==='active'
+          ? 'No active orders.'
+          : 'No recent orders.';
+
+    document.getElementById('noPayment').classList.remove('hidden');
+
+    return;
+
+  }
+
+  document.getElementById('noPayment').classList.add('hidden');
+
+  list.sort((a,b)=>
+    new Date(b.created_at||0)-new Date(a.created_at||0)
+  );
+
+  list.forEach(payment=>{
+    renderPaymentCard(payment,tab,container);
+  });
+}
+
+
+/* PAYMENT CARD */
+
+function renderPaymentCard(payment,tab,container){
+
+  const status=payment.status||'active';
+  const id=String(payment.id);
+  const amount=Number(payment.amount||0);
+
+  const income=Number(
+    payment.income!==undefined
+      ? payment.income
+      : amount*0.085
+  );
+
+  const card=document.createElement('div');
+
+  card.className='card';
+  card.style.padding='14px';
+
+  let action='';
+
+  if(tab==='buy'){
+
+    action=`
+      <button class="green"
+        onclick='selectPayment(${JSON.stringify(id)})'>
+        Buy
+      </button>
+    `;
+
+  }else if(tab==='active'){
+
+    action=`
+      <button
+        onclick='selectPayment(${JSON.stringify(id)})'>
+        Continue Payment
+      </button>
+    `;
+
+  }else{
+
+    let label='';
+
+    if(status==='pending_review'){
+      label='Pending Review';
+    }else if(status==='cancelled'){
+      label='Cancelled';
+    }else if(status==='expired'){
+      label='Expired';
+    }else if(status==='approved'){
+      label='Approved';
+    }else if(status==='rejected'){
+      label='Rejected';
+    }
+
+    action=`
+      <button disabled>
+        ${label}
+      </button>
+    `;
+  }
+
+  card.innerHTML=`
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Order #${id.slice(-6)}</strong>
+
+      <span class="status ${status}">
+        ${status.replace('_',' ')}
+      </span>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:10px">
+      <span class="small">Amount</span>
+      <strong>₹${amount.toFixed(2)}</strong>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:5px">
+      <span class="small">Income 8.5%</span>
+      <strong>₹${income.toFixed(2)}</strong>
+    </div>
+
+    ${status==='pending_review'
+      ? `<div class="small" style="margin-top:7px">
+           Pending amount: ₹${amount.toFixed(2)}
+         </div>`
+      : ''}
+
+    ${action}
+  `;
+
+  container.appendChild(card);
+}
+
+
+/* BUY / CLAIM */
+
+async function selectPayment(id){
+
+  try{
+
+    const claim=await req('/payments/'+id+'/claim',{
+      method:'POST',
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    currentPayment=claim.payment;
+
+    paymentTabName='active';
+
+    showProof();
+
+    await openPayment();
+
+    // Re-open details after refresh.
+    currentPayment=claim.payment;
+    showProof();
+
+  }catch(e){
+
+    // If already claimed by this same user, continue it.
+    try{
+
+      const data=await req('/payments',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      });
+
+      const payment=(data.payments||[]).find(
+        x=>String(x.id)===String(id)
+      );
+
+      if(payment && payment.status==='claimed'){
+
+        currentPayment=payment;
+        paymentTabName='active';
+        showProof();
+
+        return;
+      }
+
+    }catch(ignore){}
+
+    alert(e.message);
+    await openPayment();
+  }
+}
+
+
+/* COPY UPI */
+
+async function copyUPI(){
+
+  const input=document.getElementById('upiId');
+  const value=input.value;
+
+  if(!value){
+    alert('UPI ID not available');
+    return;
+  }
+
+  try{
+
+    await navigator.clipboard.writeText(value);
+    alert('UPI ID copied');
+
+  }catch(e){
+
+    input.select();
+    document.execCommand('copy');
+    alert('UPI ID copied');
+
+  }
+}
+
+
+/* SHOW DETAILS + TIMER */
+
+function showProof(){
+
+  if(!currentPayment){
+    alert('Payment order not available');
+    return;
+  }
+
+  document.getElementById('proofBox')
+    .classList.remove('hidden');
+
+  document.getElementById('upiId').value=
+    currentPayment.upi_id||'';
+
+  const amount=Number(currentPayment.amount||0);
+
+  document.getElementById('proofAmount').textContent=
+    '₹'+amount.toFixed(2);
+
+  document.getElementById('proofIncome').textContent=
+    '₹'+Number(
+      currentPayment.income!==undefined
+        ? currentPayment.income
+        : amount*0.085
+    ).toFixed(2);
+
+  document.getElementById('proofCode').textContent=
+    currentPayment.code||'-';
+
+  document.getElementById('screenshot').value='';
+  document.getElementById('preview').style.display='none';
+
+  clearInterval(paymentTimer);
+
+  const expiresAt=
+    new Date(currentPayment.expires_at).getTime();
+
+  if(isNaN(expiresAt)){
+
+    document.getElementById('countdown').textContent=
+      'Expire in 15:00';
+
+    return;
+  }
+
+  function updateTimer(){
+
+    const left=Math.max(
+      0,
+      expiresAt-Date.now()
+    );
+
+    const minutes=Math.floor(left/60000);
+    const seconds=Math.floor(
+      (left%60000)/1000
+    );
+
+    document.getElementById('countdown').textContent=
+      'Expire in '+
+      String(minutes).padStart(2,'0')+
+      ':'+
+      String(seconds).padStart(2,'0');
+
+    if(left<=0){
+
+      clearInterval(paymentTimer);
+
+      document.getElementById('countdown').textContent=
+        'Expired';
+
+      document.getElementById('proofBox')
+        .classList.add('hidden');
+
+      currentPayment=null;
+
+      openPayment();
+    }
+  }
+
+  updateTimer();
+
+  paymentTimer=setInterval(
+    updateTimer,
+    1000
+  );
+
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:'smooth'
+  });
+}
+
+
+/* CANCEL */
+
+async function cancelProof(){
+
+  if(!currentPayment){
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+    return;
+  }
+
+  if(currentPayment.status!=='claimed'){
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+    return;
+  }
+
+  if(!confirm('Cancel this payment order?')){
+    return;
+  }
+
+  try{
+
+    await req(
+      '/payments/'+currentPayment.id+'/cancel',
+      {
+        method:'POST',
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      }
+    );
+
+    clearInterval(paymentTimer);
+
+    currentPayment=null;
+
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+
+    paymentTabName='recent';
+
+    await openPayment();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+
+/* PREVIEW */
+
+function previewImage(event){
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  const preview=
+    document.getElementById('preview');
+
+  preview.src=
+    URL.createObjectURL(file);
+
+  preview.style.display='block';
+}
+
+
+/* SUBMIT PROOF */
+
+async function submitProof(){
+
+  if(!currentPayment){
+    alert('Payment order not available');
+    return;
+  }
+
+  const file=
+    document.getElementById('screenshot')
+      .files[0];
+
+  if(!file){
+    alert('Please select payment screenshot');
+    return;
+  }
+
+  if(file.size>5*1024*1024){
+    alert('Screenshot must be below 5 MB');
+    return;
+  }
+
+  const form=new FormData();
+
+  form.append(
+    'screenshot',
+    file
+  );
+
+  try{
+
+    const data=await req(
+      '/payments/'+currentPayment.id+'/proof',
+      {
+        method:'POST',
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        },
+        body:form
+      }
+    );
+
+    clearInterval(paymentTimer);
+
+    alert(
+      data.message||
+      'Payment proof submitted successfully'
+    );
+
+    currentPayment=null;
+
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+
+    paymentTabName='recent';
+
+    await openPayment();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+/* ADMIN LOGIN */
+
+async function loadAdminDashboard(){
+
+  if(!adminToken)return;
+
+  try{
+
+    const data=await req('/admin/dashboard',{
+      headers:{
+        Authorization:'Bearer '+adminToken
+      }
+    });
+
+    document.getElementById('adminTotalUsers').textContent=
+      Number(data.totalUsers||0);
+
+    document.getElementById('adminTotalBalance').textContent=
+      '₹'+Number(data.totalBalance||0).toFixed(2);
+
+    document.getElementById('adminPendingOrders').textContent=
+      Number(data.pendingOrders||0);
+
+    document.getElementById('adminPendingWithdrawals').textContent=
+      Number(data.pendingWithdrawals||0);
+
+  }catch(e){
+
+    console.error('Admin dashboard:',e.message);
+
+  }
+
+}
+
+function adminTab(tab){
+
+  const tabs=[
+    'dashboard',
+    'upi',
+    'usdt',
+    'withdraw',
+    'users'
+  ];
+
+  tabs.forEach(x=>{
+
+    const el=document.getElementById(
+      'admin'+
+      x.charAt(0).toUpperCase()+
+      x.slice(1)+
+      'Tab'
+    );
+
+    if(el) el.classList.add('hidden');
+
+    const btn=document.getElementById(
+      'adminTab'+
+      x.charAt(0).toUpperCase()+
+      x.slice(1)
+    );
+
+    if(btn){
+      btn.style.background='#eee';
+      btn.style.color='#333';
+    }
+
+  });
+
+  const section=document.getElementById(
+    'admin'+
+    tab.charAt(0).toUpperCase()+
+    tab.slice(1)+
+    'Tab'
+  );
+
+  if(section){
+    section.classList.remove('hidden');
+  }
+
+  const activeBtn=document.getElementById(
+    'adminTab'+
+    tab.charAt(0).toUpperCase()+
+    tab.slice(1)
+  );
+
+  if(activeBtn){
+    activeBtn.style.background='#7c3aed';
+    activeBtn.style.color='#fff';
+  }
+
+  if(tab==='dashboard'){
+    loadAdminDashboard();
+  }
+
+  if(tab==='upi'){
+    loadAdminPayments();
+    loadAdminWithdrawals();
+  }
+
+}
+
+async function loadAdminWithdrawals(){
+  const box=document.getElementById('adminWithdrawals');
+
+  if(!box) return;
+
+  box.innerHTML='Loading...';
+
+  try{
+    const data=await req('/admin/withdrawals',{
+      headers:{
+        Authorization:'Bearer '+adminToken
+      }
+    });
+
+    const users=data.withdrawals||[];
+
+    if(!users.length){
+      box.innerHTML='<div class="msg">Koi UPI withdrawal ON user nahi hai.</div>';
+      return;
+    }
+
+    box.innerHTML=users.map(u=>`
+      <div class="card" style="margin-top:10px;">
+        <b>${escapeHtml(u.username)}</b>
+
+        <div class="small" style="margin-top:6px;">
+          User ID: ${escapeHtml(u.id)}
+        </div>
+
+        <div class="small">
+          UPI: ${escapeHtml(u.upi_id)}
+        </div>
+
+        <div style="margin-top:8px;">
+          Balance:
+          <b>₹${Number(u.balance||0).toFixed(2)}</b>
+        </div>
+
+        <input
+          id="withdrawAmount_${u.id}"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Deduct amount"
+          style="margin-top:10px;"
+        >
+
+        <input
+          id="withdrawReason_${u.id}"
+          placeholder="Reason e.g. Send to UPI"
+        >
+
+        <button
+          onclick="deductAdminWithdrawal('${u.id}')"
+          style="width:100%;margin-top:8px;"
+        >
+          Deduct Balance
+        </button>
+      </div>
+    `).join('');
+
+  }catch(e){
+    box.innerHTML=
+      '<div class="msg">'+escapeHtml(e.message||'Could not load withdrawals')+'</div>';
+  }
+}
+
+
+async function deductAdminWithdrawal(id){
+
+  const amountInput=document.getElementById(
+    'withdrawAmount_'+id
+  );
+
+  const reasonInput=document.getElementById(
+    'withdrawReason_'+id
+  );
+
+  const amount=Number(amountInput.value);
+  const reason=reasonInput.value.trim();
+
+  if(!Number.isFinite(amount) || amount<=0){
+    alert('Valid amount enter karo');
+    return;
+  }
+
+  if(!reason){
+    alert('Reason enter karo');
+    return;
+  }
+
+  try{
+
+    const data=await req('/admin/withdrawals/'+id+'/deduct',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+adminToken
+      },
+      body:JSON.stringify({
+        amount,
+        reason
+      })
+    });
+
+    alert(data.message||'Balance deducted');
+
+    await loadAdminWithdrawals();
+
+  }catch(e){
+    alert(e.message||'Balance deduct nahi ho paya');
+  }
+}
+
+
+function withdrawTab(tab){
+
+  const upi=document.getElementById('adminUPIWithdrawList');
+  const usdt=document.getElementById('adminUSDTWithdrawList');
+
+  const upiBtn=document.getElementById('withdrawUPITab');
+  const usdtBtn=document.getElementById('withdrawUSDTTab');
+
+  if(tab==='upi'){
+
+    loadAdminWithdrawals();
+
+    upi.classList.remove('hidden');
+    usdt.classList.add('hidden');
+
+    upiBtn.style.background='#7c3aed';
+    upiBtn.style.color='#fff';
+
+    usdtBtn.style.background='#eee';
+    usdtBtn.style.color='#333';
+
+  }else{
+
+    upi.classList.add('hidden');
+    usdt.classList.remove('hidden');
+
+    usdtBtn.style.background='#7c3aed';
+    usdtBtn.style.color='#fff';
+
+    upiBtn.style.background='#eee';
+    upiBtn.style.color='#333';
+
+  }
+
+}
+
+function copyAdminUSDTWallet(){
+
+  const input=document.getElementById('adminUSDTWallet');
+
+  if(!input.value){
+    alert('Wallet address empty');
+    return;
+  }
+
+  navigator.clipboard.writeText(input.value)
+    .then(()=>alert('Wallet address copied'))
+    .catch(()=>{
+      input.select();
+      document.execCommand('copy');
+      alert('Wallet address copied');
+    });
+
+}
+
+function saveUSDTSettings(){
+
+  const min=Number(
+    document.getElementById('adminUSDTMin').value
+  );
+
+  const max=Number(
+    document.getElementById('adminUSDTMax').value
+  );
+
+  if(min<5 || max>10 || min>max){
+
+    alert('USDT limit 5 se 10 ke beech hona chahiye');
+    return;
+
+  }
+
+  alert(
+    'USDT settings UI ready. Backend next step mein connect karenge.'
+  );
+
+}
+
+async function searchAdminUser(){
+
+  const id=document.getElementById(
+    'adminUserSearch'
+  ).value.trim();
+
+  if(!id){
+    alert('User ID enter karo');
+    return;
+  }
+
+  if(!adminToken){
+    alert('Admin login required');
+    return;
+  }
+
+  const box=document.getElementById('adminUserResult');
+  box.innerHTML='<div class="msg">Searching...</div>';
+
+  try{
+
+    const data=await req(
+      '/admin/users/'+encodeURIComponent(id),
+      {
+        headers:{
+          Authorization:'Bearer '+adminToken
+        }
+      }
+    );
+
+    const u=data.user;
+
+    box.innerHTML=`
+      <div class="card">
+        <strong>User ID</strong>
+        <div>${escapeHtml(u.id)}</div>
+
+        <br>
+
+        <strong>Username</strong>
+        <div>${escapeHtml(u.username)}</div>
+
+        <br>
+
+        <strong>Balance</strong>
+        <div id="adminUserBalance">₹${Number(u.balance||0).toFixed(2)}</div>
+
+        <br>
+
+        <input
+          id="adminBalanceAmount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Balance amount"
+        >
+
+        <button
+          class="green"
+          onclick="changeAdminBalance('${u.id}','add')">
+          Add Balance
+        </button>
+
+        <button
+          class="red"
+          onclick="changeAdminBalance('${u.id}','remove')">
+          Remove Balance
+        </button>
+
+        <br><br>
+
+        <h3 style="margin:10px 0;">Withdrawal History</h3>
+        <div id="adminUserWithdrawalHistory">
+          Loading...
+        </div>
+
+      </div>
+    `;
+
+    loadAdminUserWithdrawalHistory(u.id);
+
+  }catch(e){
+
+    box.innerHTML=
+      '<div class="msg">'+
+      escapeHtml(e.message)+
+      '</div>';
+
+  }
+
+}
+
+async function loadAdminUserWithdrawalHistory(userId){
+  const box=document.getElementById('adminUserWithdrawalHistory');
+  if(!box) return;
+
+  try{
+    const data=await req('/admin/transactions/'+encodeURIComponent(userId),{
+      headers:{Authorization:'Bearer '+adminToken}
+    });
+
+    const list=(data.transactions||[]).filter(t=>t.type==='upi_withdraw');
+
+    if(!list.length){
+      box.innerHTML='<div class="msg">No withdrawal history yet.</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(t=>{
+      const d=new Date(t.created_at);
+      return `
+        <div style="
+          padding:12px 4px;
+          border-bottom:1px solid #eee;
+        ">
+          <div style="
+            font-size:24px;
+            font-weight:800;
+            color:#dc2626;
+          ">-₹${Number(t.amount||0).toFixed(2)}</div>
+
+          <div class="small" style="margin-top:4px;">
+            ${escapeHtml(t.reason||'Withdrawal')}
+          </div>
+
+          <div class="small" style="margin-top:4px;">
+            ${d.toLocaleTimeString()} &nbsp; ${d.toLocaleDateString()}
+          </div>
+
+          <div class="small" style="margin-top:5px;">
+            Balance: ₹${Number(t.balance_before||0).toFixed(2)}
+            → ₹${Number(t.balance_after||0).toFixed(2)}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  }catch(e){
+    box.innerHTML='<div class="msg">'+escapeHtml(
+      e.message||'History load nahi ho payi'
+    )+'</div>';
+  }
+}
+
+async function changeAdminBalance(id,action){
+
+  if(!adminToken){
+    alert('Admin login required');
+    return;
+  }
+
+  const input=document.getElementById('adminBalanceAmount');
+  const amount=Number(input.value);
+
+  if(!Number.isFinite(amount)||amount<=0){
+    alert('Valid amount enter karo');
+    return;
+  }
+
+  try{
+
+    const data=await req(
+      '/admin/users/'+encodeURIComponent(id)+'/balance',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          Authorization:'Bearer '+adminToken
+        },
+        body:JSON.stringify({
+          action,
+          amount
+        })
+      }
+    );
+
+    document.getElementById('adminUserBalance').textContent=
+      '₹'+Number(data.user.balance||0).toFixed(2);
+
+    input.value='';
+
+    alert(
+      action==='add'
+        ? 'Balance added successfully'
+        : 'Balance removed successfully'
+    );
+
+  }catch(e){
+    alert(e.message);
+  }
+
+}
+
+async function adminLogin(){
+
+ const username=
+  document.getElementById('au').value;
+
+ const password=
+  document.getElementById('ap').value;
+
+ try{
+
+  const data=await req('/admin/login',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username,
+    password
+   })
+  });
+
+  adminToken=data.token;
+  localStorage.setItem('adminToken',adminToken);
+
+  show('admin');
+
+  await loadAdminDashboard();
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* CREATE PAYMENT */
+
+
+async function loadWithdrawalHistory(){
+  const box=document.getElementById('withdrawalHistory');
+  if(!box) return;
+
+  box.innerHTML='Loading...';
+
+  try{
+    const data=await req('/transactions/'+encodeURIComponent(
+      document.getElementById('userIdDisplay').textContent.replace('User ID: ','')
+    ),{
+      headers:{Authorization:'Bearer '+localStorage.token}
+    });
+
+    const list=(data.transactions||[]).filter(t=>t.type==='upi_withdraw');
+
+    if(!list.length){
+      box.innerHTML='<div class="msg">No withdrawal history yet.</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(t=>{
+      const d=new Date(t.created_at);
+      return `
+        <div style="
+          padding:14px 4px;
+          border-bottom:1px solid #eee;
+        ">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+          ">
+            <div>
+              <div style="
+                font-size:26px;
+                font-weight:800;
+                color:#dc2626;
+              ">-₹${Number(t.amount||0).toFixed(2)}</div>
+
+              <div class="small" style="margin-top:5px;">
+                ${escapeHtml(t.reason||'Withdrawal')}
+              </div>
+            </div>
+
+            <div style="
+              text-align:right;
+              font-size:12px;
+              color:#666;
+              white-space:nowrap;
+            ">
+              ${d.toLocaleTimeString()}<br>
+              ${d.toLocaleDateString()}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+
+  }catch(e){
+    box.innerHTML='<div class="msg">'+escapeHtml(
+      e.message||'History load nahi ho payi'
+    )+'</div>';
+  }
+}
+
+async function openWithdrawal(){
+
+  try{
+
+    const data=await req('/me',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    const balanceEl=document.getElementById('withdrawBalance');
+    if(balanceEl){
+      balanceEl.textContent=Number(data.user.balance||0).toFixed(2);
+    }
+
+    const input=document.getElementById('withdrawUpi');
+    if(input){
+      input.value=data.user.upi_id||'';
+    }
+
+    const saved=document.getElementById('withdrawUpiSaved');
+    if(saved){
+      if(data.user.upi_id){
+        saved.classList.remove('hidden');
+      }else{
+        saved.classList.add('hidden');
+      }
+    }
+
+    const btn=document.getElementById('withdrawToggle');
+    const text=document.getElementById('withdrawToggleText');
+
+    const isOn=data.user.withdrawal_enabled===true;
+
+    btn.dataset.on=isOn?'true':'false';
+    btn.classList.toggle('on',isOn);
+
+    const label=btn.querySelector('.switch-label');
+    if(label){
+      label.textContent=isOn?'ON':'OFF';
+    }
+
+    if(text){
+      text.textContent=isOn?'ON':'OFF';
+    }
+
+    show('withdrawal');
+  loadWithdrawalHistory();
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function saveWithdrawUpi(){
+
+  const input=document.getElementById('withdrawUpi');
+  const upi=input.value.trim();
+
+  if(!upi){
+    alert('UPI ID enter karo');
+    return;
+  }
+
+  try{
+
+    await req('/withdrawal/settings',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({
+        upi_id:upi
+      })
+    });
+
+    document.getElementById('withdrawUpiSaved')
+      .classList.remove('hidden');
+
+    alert('UPI ID saved successfully');
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function toggleWithdrawal(){
+
+  const btn=document.getElementById('withdrawToggle');
+  const text=document.getElementById('withdrawToggleText');
+
+  const isOn=btn.dataset.on==='true';
+  const next=!isOn;
+
+  try{
+
+    await req('/withdrawal/settings',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({
+        withdrawal_enabled:next
+      })
+    });
+
+    btn.dataset.on=next?'true':'false';
+    btn.classList.toggle('on',next);
+
+    const label=btn.querySelector('.switch-label');
+    if(label){
+      label.textContent=next?'ON':'OFF';
+    }
+
+    if(text){
+      text.textContent=next?'ON':'OFF';
+    }
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function createPayment(){
+
+ if(!adminToken){
+  alert('Admin login required');
+  return;
+ }
+
+ const upi=
+  document.getElementById('adminUpi')
+   .value.trim();
+
+ const amount=
+  document.getElementById('adminAmount')
+   .value;
+
+ if(!upi||!amount){
+  alert('UPI ID and amount required');
+  return;
+ }
+
+ try{
+
+  await req('/admin/payments',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json',
+    Authorization:'Bearer '+adminToken
+   },
+   body:JSON.stringify({
+    upi_id:upi,
+    amount:amount
+   })
+  });
+
+  alert('Payment order created');
+
+  document.getElementById('adminUpi').value='';
+  document.getElementById('adminAmount').value='';
+
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* LOAD ADMIN PAYMENTS */
+
+async function loadAdminPayments(){
+
+ if(!adminToken)return;
+
+ try{
+
+  const data=await req('/admin/payments',{
+   headers:{
+    Authorization:'Bearer '+adminToken
+   }
+  });
+
+  const box=
+   document.getElementById('adminPayments');
+
+  if(!data.payments||data.payments.length===0){
+
+   box.innerHTML=
+    '<div class="msg">No payment orders yet.</div>';
+
+   return;
+  }
+
+  box.innerHTML='';
+
+  data.payments.forEach(p=>{
+
+   const item=
+    document.createElement('div');
+
+   item.className='admin-item';
+
+   let screenshot='';
+
+   if(p.screenshot){
+
+    screenshot=
+     '<img src="'+
+     p.screenshot+
+     '" alt="Payment screenshot">';
+
+   }
+
+   item.innerHTML=`
+
+    <b>UPI ID</b>
+    <div>${escapeHtml(p.upi_id||'')}</div>
+
+    <br>
+
+    <b>Amount</b>
+    <div>₹${escapeHtml(String(p.amount||0))}</div>
+
+    <div style="font-size:11px;opacity:.65;margin-top:4px;">
+      ${p.created_at ? new Date(p.created_at).toLocaleString() : ''}
+    </div>
+
+    <br>
+
+    <b>User</b>
+    <div>${escapeHtml(p.username||'Not submitted')}</div>
+
+    <br>
+
+    <b>Status</b>
+    <div class="status">${escapeHtml(p.status||'')}</div>
+
+    ${screenshot}
+
+    ${p.status==='pending_review' ? `
+      <button
+       class="green"
+       onclick="changeStatus('${p.id}','approved')">
+       Approve
+      </button>
+
+      <button
+       class="red"
+       onclick="changeStatus('${p.id}','rejected')">
+       Reject
+      </button>
+    ` : ''}
+
+   `;
+
+   box.appendChild(item);
+
+  });
+
+ }catch(e){
+
+  document.getElementById('adminPayments').innerHTML=
+   '<div class="msg">'+
+   escapeHtml(e.message)+
+   '</div>';
+
+ }
+}
+
+
+/* ADMIN STATUS */
+
+async function changeStatus(id,status){
+
+ if(!adminToken)return;
+
+ try{
+
+  await req(
+   '/admin/payments/'+id+'/status',
+   {
+    method:'POST',
+    headers:{
+     'Content-Type':'application/json',
+     Authorization:'Bearer '+adminToken
+    },
+    body:JSON.stringify({status})
+   }
+  );
+
+  alert(
+   status==='approved'
+   ?'Payment approved'
+   :'Payment rejected'
+  );
+
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* ADMIN LOGOUT */
+
+function adminLogout(){
+
+ adminToken=null;
+ localStorage.removeItem('adminToken');
+
+ document.getElementById('au').value='';
+ document.getElementById('ap').value='';
+
+ show('login');
+}
+
+
+/* HTML SAFETY */
+
+function escapeHtml(value){
+
+ return String(value)
+  .replace(/&/g,'&amp;')
+  .replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;')
+  .replace(/'/g,'&#039;');
+}
+
+
+/* START */
+
+/* RESTORE ADMIN SESSION AFTER REFRESH */
+(async function(){
+  try{
+    const savedAdminToken = localStorage.getItem('adminToken');
+
+    if(savedAdminToken){
+      adminToken = savedAdminToken;
+      show('admin');
+      await loadAdminDashboard();
+      await loadAdminPayments();
+    document.body.classList.remove('ac-loading');
+    }
+  }catch(e){
+    console.error('Admin session restore failed:', e);
+    localStorage.removeItem('adminToken');
+    adminToken = null;
+  }
+})();
+
+
+
+/* DRAG LIVE CHAT UP / DOWN */
+(function(){
+  const chat = document.querySelector('.ac-live-chat');
+  if(!chat) return;
+
+  let dragging = false;
+  let startY = 0;
+  let startTop = 0;
+
+  chat.addEventListener('pointerdown', function(e){
+    dragging = true;
+    startY = e.clientY;
+    startTop = chat.getBoundingClientRect().top;
+    chat.setPointerCapture(e.pointerId);
+    e.preventDefault();
+  });
+
+  chat.addEventListener('pointermove', function(e){
+    if(!dragging) return;
+
+    let newTop = startTop + (e.clientY - startY);
+
+    const maxTop = window.innerHeight - chat.offsetHeight - 5;
+    newTop = Math.max(5, Math.min(newTop, maxTop));
+
+    chat.style.top = newTop + 'px';
+    chat.style.bottom = 'auto';
+
+    e.preventDefault();
+  });
+
+  chat.addEventListener('pointerup', function(e){
+    dragging = false;
+    try{
+      chat.releasePointerCapture(e.pointerId);
+    }catch(err){}
+  });
+
+  chat.addEventListener('pointercancel', function(){
+    dragging = false;
+  });
+})();
+
+
+function showTaskTab(tab){
+
+  const newbie=document.getElementById('newbieTask');
+  const team=document.getElementById('teamTask');
+
+  const newbieTab=document.getElementById('newbieTab');
+  const teamTab=document.getElementById('teamTab');
+
+  if(tab==='team'){
+    newbie.classList.add('hidden');
+    team.classList.remove('hidden');
+    newbieTab.classList.remove('active');
+    teamTab.classList.add('active');
+  }else{
+    team.classList.add('hidden');
+    newbie.classList.remove('hidden');
+    teamTab.classList.remove('active');
+    newbieTab.classList.add('active');
+  }
+
+  window.scrollTo(0,0);
+}
+
+
+async function openStatistics(){
+  show('statistics');
+
+  try{
+    const data=await req('/statistics',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    document.getElementById('statBalance').textContent=
+      Number(data.balance||0).toFixed(2);
+
+    await refreshStatisticsBalance();
+
+    document.getElementById('statSell').textContent=
+      Number(data.sell||0).toFixed(2);
+
+    document.getElementById('statDeposit').textContent=
+      Number(data.deposit||0).toFixed(2);
+
+    document.getElementById('statCommission').textContent=
+      Number(data.commission||0).toFixed(2);
+
+    document.getElementById('statUsdt').textContent=
+      Number(data.usdtRate||118).toFixed(0);
+
+    document.getElementById('statOrders').textContent=
+      Number(data.inProcessOrders||0);
+
+    document.getElementById('statProcessAmount').textContent=
+      Number(data.inProcessAmount||0).toFixed(2);
+
+    document.getElementById('statIncome').textContent=
+      Number(data.estimatedIncome||0).toFixed(2);
+
+  }catch(e){
+    console.error(e);
+  }
+}
+
+</script>
+
+</body>
+</html>
+
+<style>
+/* Remove extra white space above dashboard/statistics */
+body{
+  margin:0 !important;
+}
+.app{
+  padding-top:0 !important;
+}
+header{
+  display:none !important;
+}
+
+/* Statistics balance */
+#statBalance{
+  font-variant-numeric:tabular-nums;
+}
+</style>
+
+<script>
+/* Keep Statistics balance connected to the real user balance */
+async function refreshStatisticsBalance(){
+  try{
+    const me=await req('/me',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    const liveBalance=Number(me.user.balance||0).toFixed(2);
+
+    const statBalance=document.getElementById('statBalance');
+    if(statBalance){
+      statBalance.textContent=liveBalance;
+    }
+
+    const mainBalance=document.getElementById('balance');
+    if(mainBalance){
+      mainBalance.textContent=me.user.balance;
+    }
+  }catch(e){
+    console.error('Live balance error:',e);
+  }
+}
+</script>
+
+<style>
+/* Remove top white gap from ACPay app pages */
+.app > main{
+  padding-top:0 !important;
+}
+</style>
+
+<style>
+.ac-balance-details-page{
+  min-height:100vh;
+  background:#f5f8fc;
+  padding:0 0 95px;
+}
+
+.ac-bd-header{
+  height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 14px;
+  background:#087dcc;
+  color:#fff;
+  font-size:20px;
+  font-weight:800;
+}
+
+.ac-bd-back{
+  width:36px;
+  height:36px;
+  margin:0;
+  padding:0;
+  background:transparent;
+  color:#fff;
+  font-size:32px;
+  line-height:1;
+}
+
+.ac-bd-balance-card{
+  margin:14px;
+  padding:20px;
+  border-radius:22px;
+  background:#087dcc;
+  color:#fff;
+  box-shadow:0 5px 18px #087dcc25;
+}
+
+.ac-bd-balance-label{
+  font-size:14px;
+  opacity:.9;
+}
+
+.ac-bd-balance-value{
+  margin-top:6px;
+  font-size:32px;
+  font-weight:800;
+}
+
+.ac-bd-tabs{
+  display:flex;
+  gap:8px;
+  padding:0 14px 14px;
+}
+
+.ac-bd-tabs button{
+  flex:1;
+  margin:0;
+  padding:10px 5px;
+  border-radius:20px;
+  background:#fff;
+  color:#555;
+  border:1px solid #e5e7eb;
+  font-size:13px;
+}
+
+.ac-bd-tabs button.active{
+  background:#087dcc;
+  color:#fff;
+  border-color:#087dcc;
+}
+
+.ac-bd-list{
+  padding:0 14px;
+}
+
+.ac-bd-item{
+  background:#fff;
+  border-radius:18px;
+  padding:15px;
+  margin-bottom:10px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  box-shadow:0 3px 12px #00000008;
+}
+
+.ac-bd-icon{
+  width:44px;
+  height:44px;
+  min-width:44px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:22px;
+  font-weight:800;
+}
+
+.ac-bd-icon.deposit{
+  background:#e8f8ef;
+  color:#16a34a;
+}
+
+.ac-bd-icon.withdraw{
+  background:#fff0f0;
+  color:#dc2626;
+}
+
+.ac-bd-icon.failed{
+  background:#fff5e6;
+  color:#ea580c;
+}
+
+.ac-bd-info{
+  flex:1;
+  min-width:0;
+}
+
+.ac-bd-name{
+  font-size:15px;
+  font-weight:800;
+  color:#222;
+}
+
+.ac-bd-date{
+  margin-top:4px;
+  font-size:12px;
+  color:#888;
+}
+
+.ac-bd-amount{
+  text-align:right;
+  font-size:16px;
+  font-weight:800;
+}
+
+.ac-bd-amount.deposit{
+  color:#16a34a;
+}
+
+.ac-bd-amount.withdraw{
+  color:#dc2626;
+}
+
+.ac-bd-amount.failed{
+  color:#ea580c;
+}
+
+.ac-bd-status{
+  margin-top:4px;
+  font-size:11px;
+  color:#888;
+}
+
+.ac-bd-empty{
+  text-align:center;
+  padding:35px 10px;
+  color:#888;
+  background:#fff;
+  border-radius:18px;
+}
+
+@media(max-width:480px){
+  .ac-bd-header{
+    height:54px;
+    font-size:19px;
+  }
+
+  .ac-bd-balance-card{
+    margin:10px;
+  }
+
+  .ac-bd-tabs{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .ac-bd-list{
+    padding:0 10px;
+  }
+}
+</style>
+
+<script>
+let balanceDetailsData=[];
+let balanceDetailsFilter='all';
+
+async function openBalanceDetails(){
+  show('balanceDetails');
+
+  const list=document.getElementById('balanceDetailsList');
+  list.innerHTML='<div class="ac-bd-empty">Loading...</div>';
+
+  try{
+    const me=await req('/me',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    document.getElementById('bdBalance').textContent=
+      Number(me.user.balance||0).toFixed(2);
+
+    const data=await req('/transactions/'+me.user.id,{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    balanceDetailsData=data.transactions||[];
+    renderBalanceDetails();
+
+  }catch(e){
+    console.error(e);
+    list.innerHTML=
+      '<div class="ac-bd-empty">Could not load transactions</div>';
+  }
+}
+
+function filterBalanceDetails(type,button){
+  balanceDetailsFilter=type;
+
+  document.querySelectorAll('.ac-bd-tabs button').forEach(b=>{
+    b.classList.remove('active');
+  });
+
+  if(button){
+    button.classList.add('active');
+  }
+
+  renderBalanceDetails();
+}
+
+function renderBalanceDetails(){
+  const list=document.getElementById('balanceDetailsList');
+
+  let items=balanceDetailsData;
+
+  if(balanceDetailsFilter==='deposit'){
+    items=items.filter(t=>
+      t.type==='payment_deposit' ||
+      t.type==='admin_deposit'
+    );
+  }
+
+  if(balanceDetailsFilter==='withdraw'){
+    items=items.filter(t=>
+      t.type==='upi_withdraw' ||
+      t.type==='admin_withdraw'
+    );
+  }
+
+  if(balanceDetailsFilter==='failed'){
+    items=items.filter(t=>
+      String(t.status||'').toLowerCase()==='failed' ||
+      String(t.type||'').toLowerCase().includes('failed')
+    );
+  }
+
+  if(!items.length){
+    list.innerHTML='<div class="ac-bd-empty">No transactions found</div>';
+    return;
+  }
+
+  list.innerHTML=items.map(t=>{
+    const isWithdraw=
+      t.type==='upi_withdraw' ||
+      t.type==='admin_withdraw';
+
+    const isFailed=
+      String(t.status||'').toLowerCase()==='failed' ||
+      String(t.type||'').toLowerCase().includes('failed');
+
+    const kind=isFailed?'failed':(isWithdraw?'withdraw':'deposit');
+
+    const name=
+      isFailed ? 'Transaction Failed' :
+      isWithdraw ? 'Withdraw' :
+      (t.type==='payment_deposit' ? 'Deposit' : 'Deposit');
+
+    const sign=isWithdraw?'−':'+';
+
+    const amount=Number(t.amount||0).toFixed(2);
+
+    const date=t.created_at
+      ?new Date(t.created_at).toLocaleString()
+      :'';
+
+    const status=
+      isFailed ? 'Failed' :
+      'Completed';
+
+    return `
+      <div class="ac-bd-item">
+        <div class="ac-bd-icon ${kind}">
+          ${isFailed?'×':(isWithdraw?'↙':'↗')}
+        </div>
+
+        <div class="ac-bd-info">
+          <div class="ac-bd-name">${name}</div>
+          <div class="ac-bd-date">${date}</div>
+          <div class="ac-bd-status">${status}</div>
+        </div>
+
+        <div class="ac-bd-amount ${kind}">
+          ${sign}₹${amount}
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+</script>
+
+<style>
+/* Deposit view: only Buy / Active / Recent */
+#payment.deposit-mode .grid{
+  display:none !important;
+}
+</style>
+
+<script>
+async function openDeposit(){
+  await openPayment();
+
+  history.replaceState({page:'deposit'},'','#deposit');
+
+  const page=document.getElementById('payment');
+  const title=document.getElementById('paymentTitle');
+
+  if(page) page.classList.add('deposit-mode');
+  if(title) title.textContent='Deposit';
+
+  const grid=page ? page.querySelector('.grid') : null;
+  if(grid) grid.style.display='none';
+
+  window.scrollTo(0,0);
+}
+
+async function openOrder(){
+
+  await openPayment();
+
+  const page=document.getElementById('payment');
+  const title=document.getElementById('paymentTitle');
+
+  if(page){
+    page.classList.add('deposit-mode');
+
+    const grid=page.querySelector('.grid');
+    if(grid) grid.style.display='none';
+  }
+
+  if(title){
+    title.textContent='Order';
+  }
+
+  if(!restoringPage){
+    history.replaceState({page:'order'},'','#order');
+  }
+
+  window.scrollTo(0,0);
+}
+
+
+async function openMainPayment(){
+  await openPayment();
+
+  const page=document.getElementById('payment');
+
+  if(page){
+    page.classList.remove('deposit-mode');
+
+    const grid=page.querySelector('.grid');
+    if(grid) grid.style.display='';
+
+    const title=document.getElementById('paymentTitle');
+    if(title) title.textContent='Payment';
+  }
+
+  if(!bottomNavigation){
+    history.replaceState({page:'payment'},'','#payment');
+  }
+
+  window.scrollTo(0,0);
+}
+</script>

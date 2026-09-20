@@ -1,0 +1,2802 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACPay</title>
+
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;
+ font-family:Arial,sans-serif;
+ background:#f5f3ff;
+ color:#241b35
+}
+.app{
+ max-width:480px;
+ margin:auto;
+ min-height:100vh;
+ background:#fff;
+ padding-bottom:75px
+}
+header{
+ background:linear-gradient(135deg,#6d28d9,#9333ea);
+ color:#fff;
+ padding:24px 20px;
+ border-radius:0 0 24px 24px
+}
+header h1{margin:0 0 12px}
+.small{opacity:.75;font-size:13px}
+.balance{font-size:32px;font-weight:700;margin-top:18px}
+main{padding:18px}
+.grid{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:12px
+}
+.card{
+ border:1px solid #eee;
+ border-radius:16px;
+ padding:18px;
+ box-shadow:0 4px 15px #00000008;
+ margin-bottom:14px
+}
+button{
+ width:100%;
+ border:0;
+ border-radius:12px;
+ padding:13px;
+ background:#7c3aed;
+ color:#fff;
+ font-weight:700;
+ margin-top:8px;
+ cursor:pointer
+}
+button.green{background:#16a34a}
+button.red{background:#dc2626}
+button.secondary{
+ background:#eee;
+ color:#333
+}
+button.dark{background:#241b35}
+input{
+ width:100%;
+ padding:13px;
+ margin:7px 0;
+ border:1px solid #ddd;
+ border-radius:10px;
+ font-size:15px
+}
+.hidden{display:none}
+nav{
+ position:fixed;
+ bottom:0;
+ left:50%;
+ transform:translateX(-50%);
+ max-width:480px;
+ width:100%;
+ display:flex;
+ background:#fff;
+ border-top:1px solid #eee;
+ z-index:10
+}
+nav button{
+ background:#fff;
+ color:#555;
+ border-radius:0;
+ margin:0
+}
+.msg{
+ padding:10px;
+ border-radius:10px;
+ background:#f3e8ff;
+ margin:10px 0
+}
+.upi-row{
+ display:flex;
+ gap:8px;
+ align-items:center
+}
+.upi-row input{
+ flex:1;
+ background:#f8f8f8;
+ margin:7px 0
+}
+.copy-btn{
+ width:auto;
+ min-width:80px;
+ margin:7px 0
+}
+.amount{
+ font-size:30px;
+ font-weight:700;
+ margin:12px 0
+}
+.status{
+ display:inline-block;
+ padding:6px 10px;
+ border-radius:20px;
+ background:#fef3c7;
+ color:#92400e;
+ font-size:13px;
+ font-weight:700
+}
+.status.approved{
+ background:#dcfce7;
+ color:#166534
+}
+.status.rejected{
+ background:#fee2e2;
+ color:#991b1b
+}
+#preview{
+ width:100%;
+ max-height:350px;
+ object-fit:contain;
+ border-radius:12px;
+ margin-top:10px;
+ display:none;
+ border:1px solid #ddd
+}
+.admin-item{
+ border:1px solid #eee;
+ border-radius:14px;
+ padding:14px;
+ margin-bottom:12px
+}
+.admin-item img{
+ width:100%;
+ max-height:300px;
+ object-fit:contain;
+ border-radius:10px;
+ margin-top:10px
+}
+hr{
+ border:0;
+ border-top:1px solid #eee;
+ margin:16px 0
+}
+
+
+<style>
+ .withdraw-switch{
+  position:relative !important;
+  width:68px !important;
+  min-width:68px !important;
+  height:34px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:20px !important;
+  background:#dc2626 !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.20) !important;
+  transition:.25s !important;
+}
+
+.withdraw-switch.on{
+  background:#16a34a !important;
+}
+
+.withdraw-switch .switch-knob{
+  position:absolute !important;
+  top:3px !important;
+  left:3px !important;
+  width:28px !important;
+  height:28px !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.30) !important;
+  transition:.25s !important;
+  z-index:2 !important;
+}
+
+.withdraw-switch.on .switch-knob{
+  transform:translateX(34px) !important;
+}
+
+.withdraw-switch .switch-label{
+  position:absolute !important;
+  top:0 !important;
+  left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  padding-right:9px !important;
+  box-sizing:border-box !important;
+  color:#fff !important;
+  font-size:11px !important;
+  font-weight:700 !important;
+  z-index:1 !important;
+  pointer-events:none !important;
+}
+
+.withdraw-switch.on .switch-label{
+  justify-content:flex-start !important;
+  padding-left:9px !important;
+  padding-right:0 !important;
+}
+
+</style>
+
+</style>
+
+<style id="final-withdraw-style">
+
+/* UPI success message */
+#withdrawUpiSaved.withdraw-success{
+  display:flex !important;
+  align-items:center !important;
+  gap:9px !important;
+  margin-top:12px !important;
+  padding:10px 12px !important;
+  border-radius:12px !important;
+  background:#e9f9ef !important;
+  border:1px solid #b9e8ca !important;
+  color:#16834b !important;
+  font-size:14px !important;
+  font-weight:600 !important;
+}
+
+#withdrawUpiSaved.withdraw-success.hidden{
+  display:none !important;
+}
+
+#withdrawUpiSaved .check{
+  display:inline-flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  flex:0 0 20px !important;
+  width:20px !important;
+  height:20px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  background:#16a34a !important;
+  color:#fff !important;
+  font-size:13px !important;
+  font-weight:700 !important;
+}
+
+/* Genuine ON / OFF switch */
+#withdrawToggle.withdraw-switch{
+  position:relative !important;
+  display:block !important;
+  width:64px !important;
+  min-width:64px !important;
+  max-width:64px !important;
+  height:32px !important;
+  min-height:32px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border:0 !important;
+  border-radius:18px !important;
+  background:#dc2626 !important;
+  box-shadow:inset 0 1px 3px rgba(0,0,0,.22) !important;
+  overflow:hidden !important;
+  cursor:pointer !important;
+}
+
+#withdrawToggle.withdraw-switch.on{
+  background:#16a34a !important;
+}
+
+#withdrawToggle .switch-knob{
+  position:absolute !important;
+  display:block !important;
+  top:3px !important;
+  left:3px !important;
+  width:26px !important;
+  height:26px !important;
+  padding:0 !important;
+  margin:0 !important;
+  border-radius:50% !important;
+  background:#fff !important;
+  box-shadow:0 1px 4px rgba(0,0,0,.30) !important;
+  transform:none !important;
+  transition:transform .22s ease !important;
+  z-index:3 !important;
+}
+
+#withdrawToggle.on .switch-knob{
+  transform:translateX(32px) !important;
+}
+
+#withdrawToggle .switch-label{
+  position:absolute !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:flex-end !important;
+  top:0 !important;
+  left:0 !important;
+  width:100% !important;
+  height:100% !important;
+  padding:0 7px 0 0 !important;
+  margin:0 !important;
+  box-sizing:border-box !important;
+  color:#fff !important;
+  font-size:10px !important;
+  line-height:1 !important;
+  font-weight:700 !important;
+  z-index:2 !important;
+  pointer-events:none !important;
+}
+
+#withdrawToggle.on .switch-label{
+  justify-content:flex-start !important;
+  padding:0 0 0 7px !important;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+<h1>ACPay</h1>
+<div class="small" id="user">Welcome</div>
+<div class="small" id="userIdDisplay"></div>
+</header>
+
+<main>
+
+<!-- LOGIN -->
+<section id="login">
+<h2>Login</h2>
+
+<input id="lu" placeholder="Username">
+<input id="lp" type="password" placeholder="Password">
+
+<button onclick="login()">Login</button>
+
+<p>
+New user?
+<a href="#" onclick="show('register');return false">Register</a>
+</p>
+
+<hr>
+
+<button class="dark" onclick="show('adminLogin')">
+Admin Panel
+</button>
+
+</section>
+
+
+<!-- REGISTER -->
+<section id="register" class="hidden">
+
+<h2>Register</h2>
+
+<input id="ru" placeholder="Username">
+<input id="rp" type="password" placeholder="Password">
+
+<button onclick="register()">Create account</button>
+
+<p>
+Already registered?
+<a href="#" onclick="show('login');return false">Login</a>
+</p>
+
+</section>
+
+
+<!-- ADMIN LOGIN -->
+<section id="adminLogin" class="hidden">
+
+<h2>Admin Login</h2>
+
+<input id="au" placeholder="Admin Username">
+<input id="ap" type="password" placeholder="Admin Password">
+
+<button onclick="adminLogin()">Login as Admin</button>
+
+<button class="secondary"
+onclick="show('login')">
+Back
+</button>
+
+</section>
+
+
+<!-- DASHBOARD -->
+<section id="home" class="hidden">
+
+<h2>Dashboard</h2>
+
+<div class="card">
+<div class="small">Available Balance</div>
+<div class="balance">
+₹<span id="balance">0</span>
+</div>
+</div>
+
+<div class="grid">
+
+<div class="card">
+<b>Payment</b>
+<p>Make payment</p>
+<button onclick="openPayment()">Open</button>
+</div>
+
+<div class="card">
+<b>USDT</b>
+<p>Deposit</p>
+<button onclick="openUSDTDeposit()">Open</button>
+</div>
+
+<div class="card">
+<b>Statistics</b>
+<p>View activity</p>
+    <button onclick="alert('Coming soon')">Open</button>
+</div>
+
+<div class="card">
+<b>Withdrawal</b>
+<p>UPI Withdraw</p>
+<button onclick="openWithdrawal()">Open</button>
+</div>
+
+</div>
+
+<div class="msg">
+Your wallet balance is updated automatically from deposits and withdrawals.
+</div>
+
+<button onclick="logout()">Logout</button>
+
+</section>
+
+
+<!-- USDT DEPOSIT -->
+<section id="usdtDeposit" class="hidden">
+
+<h2>USDT Deposit</h2>
+
+<div class="card">
+  <div class="small">Deposit Wallet Address</div>
+  <div style="display:flex;gap:6px;margin-top:8px;width:100%;">
+    <input
+      id="userUSDTWallet"
+      readonly
+      style="flex:1;min-width:0;width:100%;"
+    >
+    <button
+      onclick="copyUserUSDTWallet()"
+      style="width:58px;min-width:58px;padding:8px 5px;"
+    >
+      Copy
+    </button>
+  </div>
+</div>
+
+<div class="card">
+  <div class="small">Deposit Amount (USDT)</div>
+  <input
+    id="userUSDTAmount"
+    type="number"
+    min="5"
+    max="10"
+    step="0.01"
+    placeholder="Enter USDT amount"
+  >
+
+  <div style="margin-top:8px;font-size:13px;color:#666;font-weight:600;">
+    Minimum: 5 USDT &nbsp; | &nbsp; Maximum: 10 USDT
+  </div>
+
+  <div id="usdtAmountWarning" style="display:none;margin-top:8px;color:#dc2626;font-size:13px;font-weight:600;">
+  </div>
+
+  <button onclick="submitUSDTDeposit()" style="width:100%;margin-top:10px;">
+    Submit Deposit
+  </button>
+</div>
+
+<button onclick="show('home')" style="width:100%;margin-top:10px;">
+  Back to Dashboard
+</button>
+
+</section>
+
+<!-- WITHDRAWAL -->
+<section id="withdrawal" class="hidden">
+
+<h2>Withdrawal</h2>
+
+<div class="card">
+  <div class="small">Available Balance</div>
+  <div class="balance">
+    ₹<span id="withdrawBalance">0</span>
+  </div>
+</div>
+
+<div class="card">
+  <h3>UPI Withdraw</h3>
+
+  <div class="small">
+    Enter and save your UPI ID
+  </div>
+
+  <input
+    id="withdrawUpi"
+    placeholder="Enter UPI ID"
+    autocomplete="off"
+  >
+
+  <button onclick="saveWithdrawUpi()">
+    Save UPI ID
+  </button>
+
+  <div
+    id="withdrawUpiSaved"
+    class="withdraw-success hidden">
+    <span class="check">✓</span>
+    UPI ID saved successfully
+  </div>
+</div>
+
+<div class="card">
+
+  <div style="
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+  ">
+
+    <div>
+      <b>Withdrawal</b>
+      <div class="small" id="withdrawToggleText">
+        OFF
+      </div>
+    </div>
+
+    <button
+      id="withdrawToggle"
+      class="withdraw-switch"
+      onclick="toggleWithdrawal()"
+      aria-label="Toggle withdrawal">
+      <span class="switch-label">OFF</span>
+      <span class="switch-knob"></span>
+    </button>
+
+  </div>
+
+</div>
+
+<button onclick="show('home')">
+  Back to Dashboard
+</button>
+
+
+<div class="card" style="margin-top:14px;">
+  <h3 style="margin:0 0 12px;">Withdrawal History</h3>
+  <div id="withdrawalHistory">
+    Loading...
+  </div>
+</div>
+</section>
+
+
+<!-- PAYMENT -->
+<section id="payment" class="hidden">
+<h2>Payment</h2>
+
+<div class="grid">
+  <div class="card">
+    <div class="small">Income Rate</div>
+    <div style="font-size:24px;font-weight:700">8.5%</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Balance</div>
+    <div id="paymentBalance" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Reward</div>
+    <div id="paymentReward" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending</div>
+    <div id="paymentPending" style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+</div>
+
+<div class="card" style="padding:8px">
+  <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:5px">
+    <button id="tabBuy" onclick="paymentTab('buy')"
+      style="margin:0;background:#7c3aed">
+      Buy
+    </button>
+
+    <button id="tabActive" onclick="paymentTab('active')"
+      style="margin:0;background:#eee;color:#333">
+      Active
+    </button>
+
+    <button id="tabRecent" onclick="paymentTab('recent')"
+      style="margin:0;background:#eee;color:#333">
+      Recent
+    </button>
+  </div>
+</div>
+
+<div id="paymentOrders"></div>
+
+<div id="noPayment" class="msg hidden">
+  No payment orders available.
+</div>
+
+<div id="proofBox" class="card hidden">
+
+  <div style="display:flex;justify-content:space-between;align-items:center">
+    <h3 style="margin:0">Payment Details</h3>
+
+    <button class="secondary"
+      style="width:auto;margin:0"
+      onclick="cancelProof()">
+      Cancel
+    </button>
+  </div>
+
+  <div class="small" style="margin-top:14px">UPI ID</div>
+
+  <div class="upi-row">
+    <input id="upiId" readonly>
+    <button class="copy-btn" onclick="copyUPI()">Copy</button>
+  </div>
+
+  <div class="small">Amount</div>
+
+  <div id="proofAmount" class="amount">₹0.00</div>
+
+  <div class="small">Income 8.5%</div>
+
+  <div id="proofIncome"
+    style="font-size:20px;font-weight:700;margin:5px 0 12px">
+    ₹0.00
+  </div>
+
+  <div class="small">Code</div>
+
+  <div id="proofCode"
+    style="font-size:22px;font-weight:700;margin:6px 0 12px">
+    -
+  </div>
+
+  <div id="countdown"
+    class="msg"
+    style="text-align:center;font-weight:700">
+    Expire in 15:00
+  </div>
+
+  <p class="small">
+    Payment karne ke baad screenshot upload karein.
+  </p>
+
+  <input id="screenshot"
+    type="file"
+    accept="image/png,image/jpeg,image/webp"
+    onchange="previewImage(event)">
+
+  <img id="preview">
+
+  <button class="green" onclick="submitProof()">
+    Submit Payment
+  </button>
+
+</div>
+</section>
+
+
+<!-- ADMIN DASHBOARD -->
+<section id="admin" class="hidden">
+
+<h2>Admin Dashboard</h2>
+
+<div class="grid">
+
+  <div class="card">
+    <div class="small">Total Users</div>
+    <div id="adminTotalUsers"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Total Balance</div>
+    <div id="adminTotalBalance"
+      style="font-size:22px;font-weight:700">₹0.00</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending Orders</div>
+    <div id="adminPendingOrders"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+  <div class="card">
+    <div class="small">Pending Withdrawals</div>
+    <div id="adminPendingWithdrawals"
+      style="font-size:26px;font-weight:700">0</div>
+  </div>
+
+</div>
+
+<div class="card" style="padding:8px">
+
+  <div style="
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:4px;
+  ">
+
+    <button id="adminTabDashboard"
+      onclick="adminTab('dashboard')"
+      style="margin:0;font-size:12px">
+      Dashboard
+    </button>
+
+    <button id="adminTabUPI"
+      onclick="adminTab('upi')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      UPI
+    </button>
+
+    <button id="adminTabUSDT"
+      onclick="adminTab('usdt')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      USDT
+    </button>
+
+    <button id="adminTabWithdraw"
+      onclick="adminTab('withdraw')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      Withdraw
+    </button>
+
+    <button id="adminTabUsers"
+      onclick="adminTab('users')"
+      style="margin:0;font-size:12px;background:#eee;color:#333">
+      Users
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- ADMIN DASHBOARD HOME -->
+
+<div id="adminDashboardTab">
+
+  <div class="card">
+
+    <h3>Admin Dashboard</h3>
+
+    <p class="small">
+      Yahan se ACPay ke important sections manage honge.
+    </p>
+
+    <div class="msg">
+      <strong>UPI</strong><br>
+      Payment tasks create aur approve/reject karein.
+    </div>
+
+    <div class="msg">
+      <strong>USDT Deposit</strong><br>
+      Deposit wallet aur USDT settings manage karein.
+    </div>
+
+    <div class="msg">
+      <strong>UPI Withdrawal</strong><br>
+      User withdrawal requests yahan manage hongi.
+    </div>
+
+    <div class="msg">
+      <strong>Users</strong><br>
+      User ID search karke account manage karein.
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- UPI -->
+
+<div id="adminUpiTab" class="hidden">
+
+  <div class="card">
+
+    <h3>Create UPI Payment Order</h3>
+
+    <input
+      id="adminUpi"
+      placeholder="UPI ID e.g. acpay@upi"
+    >
+
+    <input
+      id="adminAmount"
+      type="number"
+      placeholder="Amount"
+    >
+
+    <button onclick="createPayment()">
+      Create Payment Order
+    </button>
+
+  </div>
+
+  <div class="card">
+
+    <h3>UPI Payment Orders</h3>
+
+    <div id="adminPayments">
+      Loading...
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- USDT DEPOSIT -->
+
+<div id="adminUSDTTab" class="hidden">
+
+  <div class="card">
+
+    <h3>USDT Deposit Settings</h3>
+
+    <label class="small">Wallet Address</label>
+
+    <input
+      id="adminUSDTWallet"
+      placeholder="Enter USDT wallet address"
+    >
+
+    <button onclick="copyAdminUSDTWallet()">
+      Copy Wallet
+    </button>
+
+    <hr>
+
+    <label class="small">
+      Minimum USDT
+    </label>
+
+    <input
+      id="adminUSDTMin"
+      type="number"
+      value="5"
+      min="5"
+      max="10"
+    >
+
+    <label class="small">
+      Maximum USDT
+    </label>
+
+    <input
+      id="adminUSDTMax"
+      type="number"
+      value="10"
+      min="5"
+      max="10"
+    >
+
+    <button onclick="saveUSDTSettings()">
+      Save USDT Settings
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- WITHDRAW -->
+
+<div id="adminWithdrawTab" class="hidden">
+
+  <div class="card">
+
+    <div style="
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:6px;
+    ">
+
+      <button id="withdrawUPITab"
+        onclick="withdrawTab('upi')"
+        style="margin:0">
+        UPI Withdrawal
+      </button>
+
+      <button id="withdrawUSDTTab"
+        onclick="withdrawTab('usdt')"
+        style="margin:0;background:#eee;color:#333">
+        USDT
+      </button>
+
+    </div>
+
+  </div>
+
+  <div id="adminUPIWithdrawList">
+
+    <div class="card">
+      <h3>UPI Withdrawal Requests</h3>
+      <div id="adminWithdrawals">
+        No withdrawal requests yet.
+      </div>
+    </div>
+
+  </div>
+
+  <div id="adminUSDTWithdrawList" class="hidden">
+
+    <div class="card">
+      <h3>USDT Withdrawal</h3>
+
+      <div class="msg">
+        USDT withdrawal is disabled.
+        ACPay mein withdrawal sirf UPI se hoga.
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<!-- USERS -->
+
+<div id="adminUsersTab" class="hidden">
+
+  <div class="card">
+
+    <h3>Search User</h3>
+
+    <input
+      id="adminUserSearch"
+      placeholder="Enter User ID"
+    >
+
+    <button onclick="searchAdminUser()">
+      Search User
+    </button>
+
+  </div>
+
+  <div id="adminUserResult"></div>
+
+</div>
+
+
+<button
+  class="secondary"
+  onclick="adminLogout()">
+  Admin Logout
+</button>
+
+</section>
+
+</main>
+
+
+<!-- NAV -->
+<nav id="nav" class="hidden">
+
+<button onclick="show('home')">
+Home
+</button>
+
+<button onclick="openPayment()">
+Payment
+</button>
+
+<button onclick="alert('Coming soon')">
+USDT
+</button>
+
+<button onclick="alert('Coming soon')">
+My
+</button>
+
+</nav>
+
+</div>
+
+
+<script>
+
+const API='/api';
+
+let currentPayment=null;
+let adminToken=localStorage.getItem('adminToken')||null;
+
+
+/* COMMON */
+
+function show(id, addHistory=true){
+
+ const sections=[
+  'login',
+  'register',
+  'adminLogin',
+  'home',
+  'payment',
+  'usdtDeposit',
+  'withdrawal',
+  'admin'
+ ];
+
+ sections.forEach(x=>{
+  const el=document.getElementById(x);
+  if(el) el.classList.add('hidden');
+ });
+
+ const target=document.getElementById(id);
+
+ if(target) target.classList.remove('hidden');
+
+ const nav=document.getElementById('nav');
+
+ if(id==='home'||id==='payment'||id==='usdtDeposit'||id==='withdrawal'){
+  nav.classList.remove('hidden');
+ }else{
+  nav.classList.add('hidden');
+ }
+
+ if(addHistory){
+  history.pushState({page:id},'', '#'+id);
+ }
+}
+
+
+/* BROWSER BACK BUTTON */
+
+window.addEventListener('popstate',function(e){
+
+ const page=e.state && e.state.page
+  ? e.state.page
+  :'home';
+
+ if(page==='login' && localStorage.getItem('token')){
+  show('home',false);
+  history.replaceState({page:'home'},'','#home');
+  return;
+ }
+
+ show(page,false);
+
+});
+
+
+/* RESTORE PAGE AFTER REFRESH */
+
+window.addEventListener('DOMContentLoaded',async function(){
+
+  if(localStorage.getItem('adminToken')){
+    adminToken=localStorage.getItem('adminToken');
+    show('admin',false);
+    await loadAdminDashboard();
+    await loadAdminPayments();
+    return;
+  }
+
+  if(localStorage.getItem('token')){
+    await loadMe();
+  }else{
+    show('login',false);
+    history.replaceState({page:'login'},'','#login');
+  }
+
+});
+
+
+/* API */
+
+async function req(path,options={}){
+
+ const response=await fetch(API+path,options);
+
+ const data=await response
+  .json()
+  .catch(()=>({}));
+
+ if(!response.ok)
+  throw Error(data.error||'Request failed');
+
+ return data;
+}
+
+
+/* USER REGISTER */
+
+async function register(){
+
+ try{
+
+  await req('/register',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username:document.getElementById('ru').value,
+    password:document.getElementById('rp').value
+   })
+  });
+
+  alert('Registered. Please login.');
+
+  show('login');
+
+ }catch(e){
+  alert(e.message);
+ }
+}
+
+
+/* USER LOGIN */
+
+async function login(){
+
+ try{
+
+  const data=await req('/login',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username:document.getElementById('lu').value,
+    password:document.getElementById('lp').value
+   })
+  });
+
+  localStorage.token=data.token;
+
+  await loadMe();
+
+ }catch(e){
+  alert(e.message);
+ }
+}
+
+
+/* LOAD USER */
+
+async function loadMe(){
+
+ if(!localStorage.token){
+  show('login');
+  return;
+ }
+
+ try{
+
+  const data=await req('/me',{
+   headers:{
+    Authorization:'Bearer '+localStorage.token
+   }
+  });
+
+  document.getElementById('user').textContent=
+   'Welcome, '+data.user.username;
+
+  document.getElementById('userIdDisplay').textContent=
+   'User ID: '+data.user.id;
+
+  document.getElementById('balance').textContent=
+   data.user.balance;
+
+const savedPage=location.hash
+  ?location.hash.substring(1)
+  :'home';
+
+if(savedPage==='payment'){
+  await openPayment();
+}else if(savedPage==='usdtDeposit'){
+  await openUSDTDeposit();
+}else if(savedPage==='withdrawal'){
+  await openWithdrawal();
+}else{
+  show('home',false);
+}
+ }catch(e){
+
+  localStorage.removeItem('token');
+  show('login');
+
+ }
+}
+
+
+/* USER LOGOUT */
+
+function logout(){
+
+ localStorage.removeItem('token');
+
+ currentPayment=null;
+
+ show('login');
+}
+
+
+/* PAYMENT */
+
+let paymentTabName='buy';
+let paymentCache=[];
+let paymentTimer=null;
+
+
+/* PAYMENT MAIN */
+
+async function openUSDTDeposit(){
+  try{
+    const data = await req('/usdt/settings',{
+      headers:{Authorization:'Bearer '+localStorage.token}
+    });
+
+    document.getElementById('userUSDTWallet').value =
+      data.wallet_address || '';
+
+    document.getElementById('userUSDTAmount').value = '';
+
+    show('usdtDeposit');
+  }catch(e){
+    alert(e.message || 'USDT settings load nahi ho payi');
+  }
+}
+
+function copyUserUSDTWallet(){
+  const input=document.getElementById('userUSDTWallet');
+
+  if(!input.value){
+    alert('USDT wallet address available nahi hai');
+    return;
+  }
+
+  navigator.clipboard.writeText(input.value)
+    .then(()=>alert('USDT wallet address copied'))
+    .catch(()=>{
+      input.select();
+      document.execCommand('copy');
+      alert('USDT wallet address copied');
+    });
+}
+
+async function submitUSDTDeposit(){
+  const input=document.getElementById('userUSDTAmount');
+  const amount=Number(input.value);
+
+  if(!Number.isFinite(amount) || amount<=0){
+    alert('Deposit amount enter karo');
+    return;
+  }
+
+  const warning=document.getElementById('usdtAmountWarning');
+
+  if(amount < 5){
+    warning.textContent='Minimum deposit 5 USDT';
+    warning.style.display='block';
+    return;
+  }
+
+  if(amount > 10){
+    warning.textContent='Maximum deposit 10 USDT';
+    warning.style.display='block';
+    return;
+  }
+
+  warning.style.display='none';
+
+  try{
+    const data=await req('/usdt/deposit',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({amount})
+    });
+
+    alert(data.message || 'USDT deposit request submitted');
+    input.value='';
+  }catch(e){
+    alert(e.message || 'Deposit submit nahi ho paya');
+  }
+}
+
+async function openPayment(){
+
+  show('payment');
+
+  document.getElementById('proofBox').classList.add('hidden');
+
+  try{
+
+    const [data,me]=await Promise.all([
+      req('/payments',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      }),
+
+      req('/me',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      })
+    ]);
+
+    paymentCache=data.payments||[];
+
+    document.getElementById('paymentBalance').textContent=
+      '₹'+Number(
+        me.user ? me.user.balance : me.balance || 0
+      ).toFixed(2);
+
+    document.getElementById('paymentReward').textContent=
+      '₹0.00';
+
+    const pending=paymentCache
+      .filter(x=>x.status==='pending_review')
+      .reduce((sum,x)=>sum+Number(x.amount||0),0);
+
+    document.getElementById('paymentPending').textContent=
+      '₹'+pending.toFixed(2);
+
+    paymentTab(paymentTabName);
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+
+/* PAYMENT TABS */
+
+function paymentTab(tab){
+
+  paymentTabName=tab;
+
+  const buttons={
+    buy:document.getElementById('tabBuy'),
+    active:document.getElementById('tabActive'),
+    recent:document.getElementById('tabRecent')
+  };
+
+  Object.keys(buttons).forEach(k=>{
+    buttons[k].style.margin='0';
+
+    if(k===tab){
+      buttons[k].style.background='#7c3aed';
+      buttons[k].style.color='#fff';
+    }else{
+      buttons[k].style.background='#eee';
+      buttons[k].style.color='#333';
+    }
+  });
+
+  const container=document.getElementById('paymentOrders');
+  container.innerHTML='';
+
+  let list=[];
+
+  if(tab==='buy'){
+
+    // Admin-created orders which nobody has claimed yet.
+    list=paymentCache.filter(x=>
+      x.status==='active' &&
+      !x.user_id
+    );
+
+  }else if(tab==='active'){
+
+    // Orders currently claimed by this user.
+    list=paymentCache.filter(x=>
+      x.status==='claimed'
+    );
+
+  }else{
+
+    // Finished / cancelled / expired / pending orders.
+    list=paymentCache.filter(x=>
+      x.status==='pending_review' ||
+      x.status==='cancelled' ||
+      x.status==='expired' ||
+      x.status==='approved' ||
+      x.status==='rejected'
+    );
+
+  }
+
+  if(list.length===0){
+
+    document.getElementById('noPayment').textContent=
+      tab==='buy'
+        ? 'No payment orders available.'
+        : tab==='active'
+          ? 'No active orders.'
+          : 'No recent orders.';
+
+    document.getElementById('noPayment').classList.remove('hidden');
+
+    return;
+
+  }
+
+  document.getElementById('noPayment').classList.add('hidden');
+
+  list.sort((a,b)=>
+    new Date(b.created_at||0)-new Date(a.created_at||0)
+  );
+
+  list.forEach(payment=>{
+    renderPaymentCard(payment,tab,container);
+  });
+}
+
+
+/* PAYMENT CARD */
+
+function renderPaymentCard(payment,tab,container){
+
+  const status=payment.status||'active';
+  const id=String(payment.id);
+  const amount=Number(payment.amount||0);
+
+  const income=Number(
+    payment.income!==undefined
+      ? payment.income
+      : amount*0.085
+  );
+
+  const card=document.createElement('div');
+
+  card.className='card';
+  card.style.padding='14px';
+
+  let action='';
+
+  if(tab==='buy'){
+
+    action=`
+      <button class="green"
+        onclick='selectPayment(${JSON.stringify(id)})'>
+        Buy
+      </button>
+    `;
+
+  }else if(tab==='active'){
+
+    action=`
+      <button
+        onclick='selectPayment(${JSON.stringify(id)})'>
+        Continue Payment
+      </button>
+    `;
+
+  }else{
+
+    let label='';
+
+    if(status==='pending_review'){
+      label='Pending Review';
+    }else if(status==='cancelled'){
+      label='Cancelled';
+    }else if(status==='expired'){
+      label='Expired';
+    }else if(status==='approved'){
+      label='Approved';
+    }else if(status==='rejected'){
+      label='Rejected';
+    }
+
+    action=`
+      <button disabled>
+        ${label}
+      </button>
+    `;
+  }
+
+  card.innerHTML=`
+
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <strong>Order #${id.slice(-6)}</strong>
+
+      <span class="status ${status}">
+        ${status.replace('_',' ')}
+      </span>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:10px">
+      <span class="small">Amount</span>
+      <strong>₹${amount.toFixed(2)}</strong>
+    </div>
+
+    <div style="display:flex;justify-content:space-between;margin-top:5px">
+      <span class="small">Income 8.5%</span>
+      <strong>₹${income.toFixed(2)}</strong>
+    </div>
+
+    ${status==='pending_review'
+      ? `<div class="small" style="margin-top:7px">
+           Pending amount: ₹${amount.toFixed(2)}
+         </div>`
+      : ''}
+
+    ${action}
+  `;
+
+  container.appendChild(card);
+}
+
+
+/* BUY / CLAIM */
+
+async function selectPayment(id){
+
+  try{
+
+    const claim=await req('/payments/'+id+'/claim',{
+      method:'POST',
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    currentPayment=claim.payment;
+
+    paymentTabName='active';
+
+    showProof();
+
+    await openPayment();
+
+    // Re-open details after refresh.
+    currentPayment=claim.payment;
+    showProof();
+
+  }catch(e){
+
+    // If already claimed by this same user, continue it.
+    try{
+
+      const data=await req('/payments',{
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      });
+
+      const payment=(data.payments||[]).find(
+        x=>String(x.id)===String(id)
+      );
+
+      if(payment && payment.status==='claimed'){
+
+        currentPayment=payment;
+        paymentTabName='active';
+        showProof();
+
+        return;
+      }
+
+    }catch(ignore){}
+
+    alert(e.message);
+    await openPayment();
+  }
+}
+
+
+/* COPY UPI */
+
+async function copyUPI(){
+
+  const input=document.getElementById('upiId');
+  const value=input.value;
+
+  if(!value){
+    alert('UPI ID not available');
+    return;
+  }
+
+  try{
+
+    await navigator.clipboard.writeText(value);
+    alert('UPI ID copied');
+
+  }catch(e){
+
+    input.select();
+    document.execCommand('copy');
+    alert('UPI ID copied');
+
+  }
+}
+
+
+/* SHOW DETAILS + TIMER */
+
+function showProof(){
+
+  if(!currentPayment){
+    alert('Payment order not available');
+    return;
+  }
+
+  document.getElementById('proofBox')
+    .classList.remove('hidden');
+
+  document.getElementById('upiId').value=
+    currentPayment.upi_id||'';
+
+  const amount=Number(currentPayment.amount||0);
+
+  document.getElementById('proofAmount').textContent=
+    '₹'+amount.toFixed(2);
+
+  document.getElementById('proofIncome').textContent=
+    '₹'+Number(
+      currentPayment.income!==undefined
+        ? currentPayment.income
+        : amount*0.085
+    ).toFixed(2);
+
+  document.getElementById('proofCode').textContent=
+    currentPayment.code||'-';
+
+  document.getElementById('screenshot').value='';
+  document.getElementById('preview').style.display='none';
+
+  clearInterval(paymentTimer);
+
+  const expiresAt=
+    new Date(currentPayment.expires_at).getTime();
+
+  if(isNaN(expiresAt)){
+
+    document.getElementById('countdown').textContent=
+      'Expire in 15:00';
+
+    return;
+  }
+
+  function updateTimer(){
+
+    const left=Math.max(
+      0,
+      expiresAt-Date.now()
+    );
+
+    const minutes=Math.floor(left/60000);
+    const seconds=Math.floor(
+      (left%60000)/1000
+    );
+
+    document.getElementById('countdown').textContent=
+      'Expire in '+
+      String(minutes).padStart(2,'0')+
+      ':'+
+      String(seconds).padStart(2,'0');
+
+    if(left<=0){
+
+      clearInterval(paymentTimer);
+
+      document.getElementById('countdown').textContent=
+        'Expired';
+
+      document.getElementById('proofBox')
+        .classList.add('hidden');
+
+      currentPayment=null;
+
+      openPayment();
+    }
+  }
+
+  updateTimer();
+
+  paymentTimer=setInterval(
+    updateTimer,
+    1000
+  );
+
+  window.scrollTo({
+    top:document.body.scrollHeight,
+    behavior:'smooth'
+  });
+}
+
+
+/* CANCEL */
+
+async function cancelProof(){
+
+  if(!currentPayment){
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+    return;
+  }
+
+  if(currentPayment.status!=='claimed'){
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+    return;
+  }
+
+  if(!confirm('Cancel this payment order?')){
+    return;
+  }
+
+  try{
+
+    await req(
+      '/payments/'+currentPayment.id+'/cancel',
+      {
+        method:'POST',
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        }
+      }
+    );
+
+    clearInterval(paymentTimer);
+
+    currentPayment=null;
+
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+
+    paymentTabName='recent';
+
+    await openPayment();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+
+/* PREVIEW */
+
+function previewImage(event){
+
+  const file=event.target.files[0];
+
+  if(!file)return;
+
+  const preview=
+    document.getElementById('preview');
+
+  preview.src=
+    URL.createObjectURL(file);
+
+  preview.style.display='block';
+}
+
+
+/* SUBMIT PROOF */
+
+async function submitProof(){
+
+  if(!currentPayment){
+    alert('Payment order not available');
+    return;
+  }
+
+  const file=
+    document.getElementById('screenshot')
+      .files[0];
+
+  if(!file){
+    alert('Please select payment screenshot');
+    return;
+  }
+
+  if(file.size>5*1024*1024){
+    alert('Screenshot must be below 5 MB');
+    return;
+  }
+
+  const form=new FormData();
+
+  form.append(
+    'screenshot',
+    file
+  );
+
+  try{
+
+    const data=await req(
+      '/payments/'+currentPayment.id+'/proof',
+      {
+        method:'POST',
+        headers:{
+          Authorization:'Bearer '+localStorage.token
+        },
+        body:form
+      }
+    );
+
+    clearInterval(paymentTimer);
+
+    alert(
+      data.message||
+      'Payment proof submitted successfully'
+    );
+
+    currentPayment=null;
+
+    document.getElementById('proofBox')
+      .classList.add('hidden');
+
+    paymentTabName='recent';
+
+    await openPayment();
+
+  }catch(e){
+
+    alert(e.message);
+
+  }
+}
+
+/* ADMIN LOGIN */
+
+async function loadAdminDashboard(){
+
+  if(!adminToken)return;
+
+  try{
+
+    const data=await req('/admin/dashboard',{
+      headers:{
+        Authorization:'Bearer '+adminToken
+      }
+    });
+
+    document.getElementById('adminTotalUsers').textContent=
+      Number(data.totalUsers||0);
+
+    document.getElementById('adminTotalBalance').textContent=
+      '₹'+Number(data.totalBalance||0).toFixed(2);
+
+    document.getElementById('adminPendingOrders').textContent=
+      Number(data.pendingOrders||0);
+
+    document.getElementById('adminPendingWithdrawals').textContent=
+      Number(data.pendingWithdrawals||0);
+
+  }catch(e){
+
+    console.error('Admin dashboard:',e.message);
+
+  }
+
+}
+
+function adminTab(tab){
+
+  const tabs=[
+    'dashboard',
+    'upi',
+    'usdt',
+    'withdraw',
+    'users'
+  ];
+
+  tabs.forEach(x=>{
+
+    const el=document.getElementById(
+      'admin'+
+      x.charAt(0).toUpperCase()+
+      x.slice(1)+
+      'Tab'
+    );
+
+    if(el) el.classList.add('hidden');
+
+    const btn=document.getElementById(
+      'adminTab'+
+      x.charAt(0).toUpperCase()+
+      x.slice(1)
+    );
+
+    if(btn){
+      btn.style.background='#eee';
+      btn.style.color='#333';
+    }
+
+  });
+
+  const section=document.getElementById(
+    'admin'+
+    tab.charAt(0).toUpperCase()+
+    tab.slice(1)+
+    'Tab'
+  );
+
+  if(section){
+    section.classList.remove('hidden');
+  }
+
+  const activeBtn=document.getElementById(
+    'adminTab'+
+    tab.charAt(0).toUpperCase()+
+    tab.slice(1)
+  );
+
+  if(activeBtn){
+    activeBtn.style.background='#7c3aed';
+    activeBtn.style.color='#fff';
+  }
+
+  if(tab==='dashboard'){
+    loadAdminDashboard();
+  }
+
+  if(tab==='upi'){
+    loadAdminPayments();
+    loadAdminWithdrawals();
+  }
+
+}
+
+async function loadAdminWithdrawals(){
+  const box=document.getElementById('adminWithdrawals');
+
+  if(!box) return;
+
+  box.innerHTML='Loading...';
+
+  try{
+    const data=await req('/admin/withdrawals',{
+      headers:{
+        Authorization:'Bearer '+adminToken
+      }
+    });
+
+    const users=data.withdrawals||[];
+
+    if(!users.length){
+      box.innerHTML='<div class="msg">Koi UPI withdrawal ON user nahi hai.</div>';
+      return;
+    }
+
+    box.innerHTML=users.map(u=>`
+      <div class="card" style="margin-top:10px;">
+        <b>${escapeHtml(u.username)}</b>
+
+        <div class="small" style="margin-top:6px;">
+          User ID: ${escapeHtml(u.id)}
+        </div>
+
+        <div class="small">
+          UPI: ${escapeHtml(u.upi_id)}
+        </div>
+
+        <div style="margin-top:8px;">
+          Balance:
+          <b>₹${Number(u.balance||0).toFixed(2)}</b>
+        </div>
+
+        <input
+          id="withdrawAmount_${u.id}"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Deduct amount"
+          style="margin-top:10px;"
+        >
+
+        <input
+          id="withdrawReason_${u.id}"
+          placeholder="Reason e.g. Send to UPI"
+        >
+
+        <button
+          onclick="deductAdminWithdrawal('${u.id}')"
+          style="width:100%;margin-top:8px;"
+        >
+          Deduct Balance
+        </button>
+      </div>
+    `).join('');
+
+  }catch(e){
+    box.innerHTML=
+      '<div class="msg">'+escapeHtml(e.message||'Could not load withdrawals')+'</div>';
+  }
+}
+
+
+async function deductAdminWithdrawal(id){
+
+  const amountInput=document.getElementById(
+    'withdrawAmount_'+id
+  );
+
+  const reasonInput=document.getElementById(
+    'withdrawReason_'+id
+  );
+
+  const amount=Number(amountInput.value);
+  const reason=reasonInput.value.trim();
+
+  if(!Number.isFinite(amount) || amount<=0){
+    alert('Valid amount enter karo');
+    return;
+  }
+
+  if(!reason){
+    alert('Reason enter karo');
+    return;
+  }
+
+  try{
+
+    const data=await req('/admin/withdrawals/'+id+'/deduct',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+adminToken
+      },
+      body:JSON.stringify({
+        amount,
+        reason
+      })
+    });
+
+    alert(data.message||'Balance deducted');
+
+    await loadAdminWithdrawals();
+
+  }catch(e){
+    alert(e.message||'Balance deduct nahi ho paya');
+  }
+}
+
+
+function withdrawTab(tab){
+
+  const upi=document.getElementById('adminUPIWithdrawList');
+  const usdt=document.getElementById('adminUSDTWithdrawList');
+
+  const upiBtn=document.getElementById('withdrawUPITab');
+  const usdtBtn=document.getElementById('withdrawUSDTTab');
+
+  if(tab==='upi'){
+
+    loadAdminWithdrawals();
+
+    upi.classList.remove('hidden');
+    usdt.classList.add('hidden');
+
+    upiBtn.style.background='#7c3aed';
+    upiBtn.style.color='#fff';
+
+    usdtBtn.style.background='#eee';
+    usdtBtn.style.color='#333';
+
+  }else{
+
+    upi.classList.add('hidden');
+    usdt.classList.remove('hidden');
+
+    usdtBtn.style.background='#7c3aed';
+    usdtBtn.style.color='#fff';
+
+    upiBtn.style.background='#eee';
+    upiBtn.style.color='#333';
+
+  }
+
+}
+
+function copyAdminUSDTWallet(){
+
+  const input=document.getElementById('adminUSDTWallet');
+
+  if(!input.value){
+    alert('Wallet address empty');
+    return;
+  }
+
+  navigator.clipboard.writeText(input.value)
+    .then(()=>alert('Wallet address copied'))
+    .catch(()=>{
+      input.select();
+      document.execCommand('copy');
+      alert('Wallet address copied');
+    });
+
+}
+
+function saveUSDTSettings(){
+
+  const min=Number(
+    document.getElementById('adminUSDTMin').value
+  );
+
+  const max=Number(
+    document.getElementById('adminUSDTMax').value
+  );
+
+  if(min<5 || max>10 || min>max){
+
+    alert('USDT limit 5 se 10 ke beech hona chahiye');
+    return;
+
+  }
+
+  alert(
+    'USDT settings UI ready. Backend next step mein connect karenge.'
+  );
+
+}
+
+async function searchAdminUser(){
+
+  const id=document.getElementById(
+    'adminUserSearch'
+  ).value.trim();
+
+  if(!id){
+    alert('User ID enter karo');
+    return;
+  }
+
+  if(!adminToken){
+    alert('Admin login required');
+    return;
+  }
+
+  const box=document.getElementById('adminUserResult');
+  box.innerHTML='<div class="msg">Searching...</div>';
+
+  try{
+
+    const data=await req(
+      '/admin/users/'+encodeURIComponent(id),
+      {
+        headers:{
+          Authorization:'Bearer '+adminToken
+        }
+      }
+    );
+
+    const u=data.user;
+
+    box.innerHTML=`
+      <div class="card">
+        <strong>User ID</strong>
+        <div>${escapeHtml(u.id)}</div>
+
+        <br>
+
+        <strong>Username</strong>
+        <div>${escapeHtml(u.username)}</div>
+
+        <br>
+
+        <strong>Balance</strong>
+        <div id="adminUserBalance">₹${Number(u.balance||0).toFixed(2)}</div>
+
+        <br>
+
+        <input
+          id="adminBalanceAmount"
+          type="number"
+          min="0.01"
+          step="0.01"
+          placeholder="Balance amount"
+        >
+
+        <button
+          class="green"
+          onclick="changeAdminBalance('${u.id}','add')">
+          Add Balance
+        </button>
+
+        <button
+          class="red"
+          onclick="changeAdminBalance('${u.id}','remove')">
+          Remove Balance
+        </button>
+
+        <br><br>
+
+        <h3 style="margin:10px 0;">Withdrawal History</h3>
+        <div id="adminUserWithdrawalHistory">
+          Loading...
+        </div>
+
+      </div>
+    `;
+
+    loadAdminUserWithdrawalHistory(u.id);
+
+  }catch(e){
+
+    box.innerHTML=
+      '<div class="msg">'+
+      escapeHtml(e.message)+
+      '</div>';
+
+  }
+
+}
+
+async function loadAdminUserWithdrawalHistory(userId){
+  const box=document.getElementById('adminUserWithdrawalHistory');
+  if(!box) return;
+
+  try{
+    const data=await req('/admin/transactions/'+encodeURIComponent(userId),{
+      headers:{Authorization:'Bearer '+adminToken}
+    });
+
+    const list=(data.transactions||[]).filter(t=>t.type==='upi_withdraw');
+
+    if(!list.length){
+      box.innerHTML='<div class="msg">No withdrawal history yet.</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(t=>{
+      const d=new Date(t.created_at);
+      return `
+        <div style="
+          padding:12px 4px;
+          border-bottom:1px solid #eee;
+        ">
+          <div style="
+            font-size:24px;
+            font-weight:800;
+            color:#dc2626;
+          ">-₹${Number(t.amount||0).toFixed(2)}</div>
+
+          <div class="small" style="margin-top:4px;">
+            ${escapeHtml(t.reason||'Withdrawal')}
+          </div>
+
+          <div class="small" style="margin-top:4px;">
+            ${d.toLocaleTimeString()} &nbsp; ${d.toLocaleDateString()}
+          </div>
+
+          <div class="small" style="margin-top:5px;">
+            Balance: ₹${Number(t.balance_before||0).toFixed(2)}
+            → ₹${Number(t.balance_after||0).toFixed(2)}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+  }catch(e){
+    box.innerHTML='<div class="msg">'+escapeHtml(
+      e.message||'History load nahi ho payi'
+    )+'</div>';
+  }
+}
+
+async function changeAdminBalance(id,action){
+
+  if(!adminToken){
+    alert('Admin login required');
+    return;
+  }
+
+  const input=document.getElementById('adminBalanceAmount');
+  const amount=Number(input.value);
+
+  if(!Number.isFinite(amount)||amount<=0){
+    alert('Valid amount enter karo');
+    return;
+  }
+
+  try{
+
+    const data=await req(
+      '/admin/users/'+encodeURIComponent(id)+'/balance',
+      {
+        method:'POST',
+        headers:{
+          'Content-Type':'application/json',
+          Authorization:'Bearer '+adminToken
+        },
+        body:JSON.stringify({
+          action,
+          amount
+        })
+      }
+    );
+
+    document.getElementById('adminUserBalance').textContent=
+      '₹'+Number(data.user.balance||0).toFixed(2);
+
+    input.value='';
+
+    alert(
+      action==='add'
+        ? 'Balance added successfully'
+        : 'Balance removed successfully'
+    );
+
+  }catch(e){
+    alert(e.message);
+  }
+
+}
+
+async function adminLogin(){
+
+ const username=
+  document.getElementById('au').value;
+
+ const password=
+  document.getElementById('ap').value;
+
+ try{
+
+  const data=await req('/admin/login',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json'
+   },
+   body:JSON.stringify({
+    username,
+    password
+   })
+  });
+
+  adminToken=data.token;
+  localStorage.setItem('adminToken',adminToken);
+
+  show('admin');
+
+  await loadAdminDashboard();
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* CREATE PAYMENT */
+
+
+async function loadWithdrawalHistory(){
+  const box=document.getElementById('withdrawalHistory');
+  if(!box) return;
+
+  box.innerHTML='Loading...';
+
+  try{
+    const data=await req('/transactions/'+encodeURIComponent(
+      document.getElementById('userIdDisplay').textContent.replace('User ID: ','')
+    ),{
+      headers:{Authorization:'Bearer '+localStorage.token}
+    });
+
+    const list=(data.transactions||[]).filter(t=>t.type==='upi_withdraw');
+
+    if(!list.length){
+      box.innerHTML='<div class="msg">No withdrawal history yet.</div>';
+      return;
+    }
+
+    box.innerHTML=list.map(t=>{
+      const d=new Date(t.created_at);
+      return `
+        <div style="
+          padding:14px 4px;
+          border-bottom:1px solid #eee;
+        ">
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            align-items:center;
+            gap:10px;
+          ">
+            <div>
+              <div style="
+                font-size:26px;
+                font-weight:800;
+                color:#dc2626;
+              ">-₹${Number(t.amount||0).toFixed(2)}</div>
+
+              <div class="small" style="margin-top:5px;">
+                ${escapeHtml(t.reason||'Withdrawal')}
+              </div>
+            </div>
+
+            <div style="
+              text-align:right;
+              font-size:12px;
+              color:#666;
+              white-space:nowrap;
+            ">
+              ${d.toLocaleTimeString()}<br>
+              ${d.toLocaleDateString()}
+            </div>
+          </div>
+
+        </div>
+      `;
+    }).join('');
+
+  }catch(e){
+    box.innerHTML='<div class="msg">'+escapeHtml(
+      e.message||'History load nahi ho payi'
+    )+'</div>';
+  }
+}
+
+async function openWithdrawal(){
+
+  try{
+
+    const data=await req('/me',{
+      headers:{
+        Authorization:'Bearer '+localStorage.token
+      }
+    });
+
+    const balanceEl=document.getElementById('withdrawBalance');
+    if(balanceEl){
+      balanceEl.textContent=Number(data.user.balance||0).toFixed(2);
+    }
+
+    const input=document.getElementById('withdrawUpi');
+    if(input){
+      input.value=data.user.upi_id||'';
+    }
+
+    const saved=document.getElementById('withdrawUpiSaved');
+    if(saved){
+      if(data.user.upi_id){
+        saved.classList.remove('hidden');
+      }else{
+        saved.classList.add('hidden');
+      }
+    }
+
+    const btn=document.getElementById('withdrawToggle');
+    const text=document.getElementById('withdrawToggleText');
+
+    const isOn=data.user.withdrawal_enabled===true;
+
+    btn.dataset.on=isOn?'true':'false';
+    btn.classList.toggle('on',isOn);
+
+    const label=btn.querySelector('.switch-label');
+    if(label){
+      label.textContent=isOn?'ON':'OFF';
+    }
+
+    if(text){
+      text.textContent=isOn?'ON':'OFF';
+    }
+
+    show('withdrawal');
+  loadWithdrawalHistory();
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function saveWithdrawUpi(){
+
+  const input=document.getElementById('withdrawUpi');
+  const upi=input.value.trim();
+
+  if(!upi){
+    alert('UPI ID enter karo');
+    return;
+  }
+
+  try{
+
+    await req('/withdrawal/settings',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({
+        upi_id:upi
+      })
+    });
+
+    document.getElementById('withdrawUpiSaved')
+      .classList.remove('hidden');
+
+    alert('UPI ID saved successfully');
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function toggleWithdrawal(){
+
+  const btn=document.getElementById('withdrawToggle');
+  const text=document.getElementById('withdrawToggleText');
+
+  const isOn=btn.dataset.on==='true';
+  const next=!isOn;
+
+  try{
+
+    await req('/withdrawal/settings',{
+      method:'POST',
+      headers:{
+        'Content-Type':'application/json',
+        Authorization:'Bearer '+localStorage.token
+      },
+      body:JSON.stringify({
+        withdrawal_enabled:next
+      })
+    });
+
+    btn.dataset.on=next?'true':'false';
+    btn.classList.toggle('on',next);
+
+    const label=btn.querySelector('.switch-label');
+    if(label){
+      label.textContent=next?'ON':'OFF';
+    }
+
+    if(text){
+      text.textContent=next?'ON':'OFF';
+    }
+
+  }catch(e){
+    alert(e.message);
+  }
+}
+
+async function createPayment(){
+
+ if(!adminToken){
+  alert('Admin login required');
+  return;
+ }
+
+ const upi=
+  document.getElementById('adminUpi')
+   .value.trim();
+
+ const amount=
+  document.getElementById('adminAmount')
+   .value;
+
+ if(!upi||!amount){
+  alert('UPI ID and amount required');
+  return;
+ }
+
+ try{
+
+  await req('/admin/payments',{
+   method:'POST',
+   headers:{
+    'Content-Type':'application/json',
+    Authorization:'Bearer '+adminToken
+   },
+   body:JSON.stringify({
+    upi_id:upi,
+    amount:amount
+   })
+  });
+
+  alert('Payment order created');
+
+  document.getElementById('adminUpi').value='';
+  document.getElementById('adminAmount').value='';
+
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* LOAD ADMIN PAYMENTS */
+
+async function loadAdminPayments(){
+
+ if(!adminToken)return;
+
+ try{
+
+  const data=await req('/admin/payments',{
+   headers:{
+    Authorization:'Bearer '+adminToken
+   }
+  });
+
+  const box=
+   document.getElementById('adminPayments');
+
+  if(!data.payments||data.payments.length===0){
+
+   box.innerHTML=
+    '<div class="msg">No payment orders yet.</div>';
+
+   return;
+  }
+
+  box.innerHTML='';
+
+  data.payments.forEach(p=>{
+
+   const item=
+    document.createElement('div');
+
+   item.className='admin-item';
+
+   let screenshot='';
+
+   if(p.screenshot){
+
+    screenshot=
+     '<img src="'+
+     p.screenshot+
+     '" alt="Payment screenshot">';
+
+   }
+
+   item.innerHTML=`
+
+    <b>UPI ID</b>
+    <div>${escapeHtml(p.upi_id||'')}</div>
+
+    <br>
+
+    <b>Amount</b>
+    <div>₹${escapeHtml(String(p.amount||0))}</div>
+
+    <div style="font-size:11px;opacity:.65;margin-top:4px;">
+      ${p.created_at ? new Date(p.created_at).toLocaleString() : ''}
+    </div>
+
+    <br>
+
+    <b>User</b>
+    <div>${escapeHtml(p.username||'Not submitted')}</div>
+
+    <br>
+
+    <b>Status</b>
+    <div class="status">${escapeHtml(p.status||'')}</div>
+
+    ${screenshot}
+
+    ${p.status==='pending_review' ? `
+      <button
+       class="green"
+       onclick="changeStatus('${p.id}','approved')">
+       Approve
+      </button>
+
+      <button
+       class="red"
+       onclick="changeStatus('${p.id}','rejected')">
+       Reject
+      </button>
+    ` : ''}
+
+   `;
+
+   box.appendChild(item);
+
+  });
+
+ }catch(e){
+
+  document.getElementById('adminPayments').innerHTML=
+   '<div class="msg">'+
+   escapeHtml(e.message)+
+   '</div>';
+
+ }
+}
+
+
+/* ADMIN STATUS */
+
+async function changeStatus(id,status){
+
+ if(!adminToken)return;
+
+ try{
+
+  await req(
+   '/admin/payments/'+id+'/status',
+   {
+    method:'POST',
+    headers:{
+     'Content-Type':'application/json',
+     Authorization:'Bearer '+adminToken
+    },
+    body:JSON.stringify({status})
+   }
+  );
+
+  alert(
+   status==='approved'
+   ?'Payment approved'
+   :'Payment rejected'
+  );
+
+  await loadAdminPayments();
+
+ }catch(e){
+
+  alert(e.message);
+
+ }
+}
+
+
+/* ADMIN LOGOUT */
+
+function adminLogout(){
+
+ adminToken=null;
+ localStorage.removeItem('adminToken');
+
+ document.getElementById('au').value='';
+ document.getElementById('ap').value='';
+
+ show('login');
+}
+
+
+/* HTML SAFETY */
+
+function escapeHtml(value){
+
+ return String(value)
+  .replace(/&/g,'&amp;')
+  .replace(/</g,'&lt;')
+  .replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;')
+  .replace(/'/g,'&#039;');
+}
+
+
+/* START */
+
+</script>
+
+</body>
+</html>

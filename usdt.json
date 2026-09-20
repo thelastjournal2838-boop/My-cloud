@@ -1,0 +1,165 @@
+{
+  "settings": {
+    "wallet_address": "Jjssn",
+    "min": 1,
+    "max": 100
+  },
+  "deposits": [
+    {
+      "id": "1789659543159",
+      "user_id": "1789567380464",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-17T15:39:03.159Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T10:20:18.684Z"
+    },
+    {
+      "id": "1789710779229",
+      "user_id": "1789650037555",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T05:52:59.229Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T10:20:25.832Z"
+    },
+    {
+      "id": "1789716290686",
+      "user_id": "1789578890966",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T07:24:50.686Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:49.613Z"
+    },
+    {
+      "id": "1789716297085",
+      "user_id": "1789578890966",
+      "amount": 5,
+      "status": "approved",
+      "created_at": "2026-09-18T07:24:57.085Z",
+      "inr_amount": 590,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:46.955Z"
+    },
+    {
+      "id": "1789716568433",
+      "user_id": "1789578890966",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T07:29:28.433Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:43.833Z"
+    },
+    {
+      "id": "1789716572126",
+      "user_id": "1789578890966",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T07:29:32.127Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:04.417Z"
+    },
+    {
+      "id": "1789718431894",
+      "user_id": "1789567380464",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T08:00:31.894Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:02.226Z"
+    },
+    {
+      "id": "1789718884775",
+      "user_id": "1789578890966",
+      "amount": 6,
+      "status": "approved",
+      "created_at": "2026-09-18T08:08:04.775Z",
+      "inr_amount": 708,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T11:00:00.037Z"
+    },
+    {
+      "id": "1789724503096",
+      "user_id": "1789578890966",
+      "amount": 10,
+      "status": "approved",
+      "created_at": "2026-09-18T09:41:43.096Z",
+      "inr_amount": 1180,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T10:59:57.743Z"
+    },
+    {
+      "id": "1789728583315",
+      "user_id": "1789650037555",
+      "amount": 300,
+      "status": "approved",
+      "created_at": "2026-09-18T10:49:43.315Z",
+      "inr_amount": 35400,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-18T10:59:54.736Z"
+    },
+    {
+      "id": "1789734822865",
+      "user_id": "866313",
+      "amount": 10,
+      "status": "rejected",
+      "created_at": "2026-09-18T12:33:42.865Z",
+      "reviewed_at": "2026-09-18T12:44:14.381Z"
+    },
+    {
+      "id": "1789749161080",
+      "user_id": "692012",
+      "amount": 1,
+      "status": "approved",
+      "created_at": "2026-09-18T16:32:41.080Z",
+      "inr_amount": 118,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-19T16:03:33.978Z"
+    },
+    {
+      "id": "1789749164390",
+      "user_id": "692012",
+      "amount": 11,
+      "status": "pending",
+      "created_at": "2026-09-18T16:32:44.390Z"
+    },
+    {
+      "id": "1789749167548",
+      "user_id": "692012",
+      "amount": 21,
+      "status": "pending",
+      "created_at": "2026-09-18T16:32:47.548Z"
+    },
+    {
+      "id": "1789749170990",
+      "user_id": "692012",
+      "amount": 31,
+      "status": "pending",
+      "created_at": "2026-09-18T16:32:50.990Z"
+    },
+    {
+      "id": "1789749173889",
+      "user_id": "692012",
+      "amount": 41,
+      "status": "pending",
+      "created_at": "2026-09-18T16:32:53.889Z"
+    },
+    {
+      "id": "1789789700946",
+      "user_id": "1789567380464",
+      "amount": 100,
+      "status": "approved",
+      "created_at": "2026-09-19T03:48:20.949Z",
+      "inr_amount": 11800,
+      "usdt_rate": 118,
+      "reviewed_at": "2026-09-19T16:03:59.058Z"
+    }
+  ]
+}

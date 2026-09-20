@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ACPay</title><style>
+*{box-sizing:border-box}body{margin:0;font-family:Arial;background:#f5f3ff;color:#241b35}.app{max-width:480px;margin:auto;min-height:100vh;background:#fff;padding-bottom:75px}
+header{background:linear-gradient(135deg,#6d28d9,#9333ea);color:#fff;padding:24px 20px;border-radius:0 0 24px 24px}.small{opacity:.8;font-size:13px}.balance{font-size:32px;font-weight:700;margin-top:18px}
+main{padding:18px}.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.card{border:1px solid #eee;border-radius:16px;padding:18px;box-shadow:0 4px 15px #00000008}
+button{width:100%;border:0;border-radius:12px;padding:13px;background:#7c3aed;color:#fff;font-weight:700}input{width:100%;padding:13px;margin:7px 0;border:1px solid #ddd;border-radius:10px}.hidden{display:none}
+nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);max-width:480px;width:100%;display:flex;background:#fff;border-top:1px solid #eee}nav button{background:#fff;color:#555;border-radius:0}
+.msg{padding:10px;border-radius:10px;background:#f3e8ff;margin:10px 0}
+</style></head><body><div class="app"><header><h1>ACPay</h1><div class="small" id="user">Welcome</div></header><main>
+<section id="login"><h2>Login</h2><input id="lu" placeholder="Username"><input id="lp" type="password" placeholder="Password"><button onclick="login()">Login</button><p>New user? <a href="#" onclick="show('register')">Register</a></p></section>
+<section id="register" class="hidden"><h2>Register</h2><input id="ru" placeholder="Username"><input id="rp" type="password" placeholder="Password"><button onclick="register()">Create account</button><p>Already registered? <a href="#" onclick="show('login')">Login</a></p></section>
+<section id="home" class="hidden"><h2>Dashboard</h2><div class="card" style="margin-bottom:12px"><div class="small">Available Balance</div><div class="balance">₹<span id="balance">0</span></div></div><div class="grid"><div class="card"><b>Payment</b><p>Make payment</p><button onclick="show('payment')">Open</button></div><div class="card"><b>USDT</b><p>Deposit</p><button onclick="alert('Demo only')">Open</button></div><div class="card"><b>Statistics</b><p>View activity</p><button onclick="alert('Demo only')">Open</button></div><div class="card"><b>Withdrawal</b><p>UPI / Bank</p><button onclick="alert('Demo only')">Open</button></div></div><div class="msg">Your wallet balance is updated automatically from deposits and withdrawals.</div><button onclick="logout()">Logout</button></section>
+<section id="payment" class="hidden"><h2>Payment</h2><div class="card"><h3>Payment Orders</h3><p>Manage your payment orders here.</p><button onclick="alert('Payment system ready')">Orders</button></div></section>
+</main><nav id="nav" class="hidden"><button onclick="show('home')">Home</button><button onclick="alert('Demo only')">Payment</button><button onclick="alert('Demo only')">USDT</button><button onclick="alert('Demo only')">My</button></nav></div>
+<script>
+const API='/api';function show(id){['login','register','home'].forEach(x=>document.getElementById(x).classList.add('hidden'));document.getElementById(id).classList.remove('hidden');document.getElementById('nav').classList.toggle('hidden',id!=='home')}
+async function req(p,o={}){let r=await fetch(API+p,{headers:{'Content-Type':'application/json',...(o.headers||{})},...o});let d=await r.json().catch(()=>({}));if(!r.ok)throw Error(d.error||'Request failed');return d}
+async function register(){try{await req('/register',{method:'POST',body:JSON.stringify({username:ru.value,password:rp.value})});alert('Registered. Please login.');show('login')}catch(e){alert(e.message)}}
+async function login(){try{let d=await req('/login',{method:'POST',body:JSON.stringify({username:lu.value,password:lp.value})});localStorage.token=d.token;loadMe()}catch(e){alert(e.message)}}
+async function loadMe(){try{let d=await req('/me',{headers:{Authorization:'Bearer '+localStorage.token}});user.textContent='Welcome, '+d.user.username;balance.textContent=d.user.balance;show('home')}catch(e){localStorage.removeItem('token');show('login')}}
+function logout(){localStorage.removeItem('token');show('login')}loadMe();
+</script></body></html>

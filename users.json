@@ -1,0 +1,72 @@
+[
+  {
+    "id": "1789567380464",
+    "username": "Amit997473",
+    "password_hash": "$2a$10$IgI4a4E5u1muJUULTZsTo.JSAncbT0p3oa6LVxlLZ6Ate73ktdDdG",
+    "balance": 0,
+    "created_at": "2026-09-16T14:03:00.464Z",
+    "upi_id": "Cghh",
+    "withdrawal_enabled": true,
+    "referral_code": "AMIT990464"
+  },
+  {
+    "id": "1789568295853",
+    "username": "Amitamit",
+    "password_hash": "$2a$10$sYR4ge0I56Kn/LAmIh9k.eFh99sPFyk8Lggo7.1KwfyfAEuQkqjFi",
+    "balance": 0,
+    "created_at": "2026-09-16T14:18:15.853Z"
+  },
+  {
+    "id": "1789571675237",
+    "username": "Sonu",
+    "password_hash": "$2a$10$2WvioAx2ojsgVsa7nqABoe.R3L94Ak2HaR6xLR7uEiDlR1E8RVbLm",
+    "balance": 0,
+    "created_at": "2026-09-16T15:14:35.237Z"
+  },
+  {
+    "id": "1789578890966",
+    "username": "Dhirendra",
+    "password_hash": "$2a$10$riWYoOj7MryDXoPrynwU4ueSvNhkavwCN2HH7uG5pSd8ZDP0g9T8.",
+    "balance": 0,
+    "created_at": "2026-09-16T17:14:50.966Z",
+    "withdrawal_enabled": true,
+    "upi_id": "Amitbdb",
+    "referral_code": "DHIREN0966"
+  },
+  {
+    "id": "1789650037555",
+    "username": "123",
+    "password_hash": "$2a$10$OKsE8YvqdVN84AlK/2TbM.3REN7RUvjvbPNr/MGR3RgJohJ2oOwry",
+    "balance": 36580.5,
+    "created_at": "2026-09-17T13:00:37.555Z",
+    "referral_code": "1237555",
+    "withdrawal_enabled": false
+  },
+  {
+    "id": "866313",
+    "username": "1234",
+    "password_hash": "$2a$10$/eIwLeR8q5ogzuc2XIqOaOV11OuXzeiYRP5fLNIFzqF4mo77Y.7/i",
+    "balance": 2000,
+    "created_at": "2026-09-17T14:21:15.191Z",
+    "withdrawal_enabled": true,
+    "upi_id": "Hsh",
+    "referral_code": "12346313"
+  },
+  {
+    "id": "820322",
+    "username": "12345",
+    "password_hash": "$2a$10$A5zqH3nAMyCL4r/DC0XFHepQG8J0yUTfVE4JvoQG81pdL2Ez5yOpO",
+    "balance": 0,
+    "created_at": "2026-09-17T15:55:18.612Z"
+  },
+  {
+    "id": "692012",
+    "username": "000",
+    "password_hash": "$2a$10$q.ClaAZD6ulXUYodiMEiweNsjyQfrl1uFTJROiAkEn9YR0v7FRxbO",
+    "balance": 313,
+    "created_at": "2026-09-17T17:18:13.533Z",
+    "upi_id": "Bsbanb@",
+    "withdrawal_enabled": true,
+    "referral_code": "0002012"
+  }
+]
